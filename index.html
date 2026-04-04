@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>التحقق من الشهادة - صلة الإتقان للتدريب</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f0f4f8; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+.container { width: 100%; max-width: 500px; }
+.logo-box { text-align: center; margin-bottom: 20px; }
+.logo-box h1 { font-size: 20px; color: #1D9E75; font-weight: 700; }
+.logo-box p { font-size: 13px; color: #999; margin-top: 4px; }
+.card { background: white; border-radius: 16px; padding: 28px; box-shadow: 0 4px 24px rgba(0,0,0,0.08); }
+.loading { text-align: center; padding: 32px 0; }
+.spinner { width: 40px; height: 40px; border: 3px solid #e0e0e0; border-top-color: #1D9E75; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 14px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading p { color: #aaa; font-size: 14px; }
+.status-badge { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 12px; margin-bottom: 20px; }
+.status-badge.valid { background: #E1F5EE; }
+.status-badge.invalid { background: #FCEBEB; }
+.status-icon { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; color: white; flex-shrink: 0; }
+.status-icon.valid { background: #1D9E75; }
+.status-icon.invalid { background: #E24B4A; }
+.status-text h2 { font-size: 15px; font-weight: 600; }
+.valid .status-text h2 { color: #085041; }
+.invalid .status-text h2 { color: #A32D2D; }
+.status-text p { font-size: 12px; margin-top: 2px; color: #666; }
+.cert-name { font-size: 22px; font-weight: 700; color: #111; text-align: center; margin-bottom: 4px; }
+.cert-course { font-size: 14px; color: #666; text-align: center; margin-bottom: 20px; line-height: 1.5; }
+hr { border: none; border-top: 1px solid #f0f0f0; margin: 16px 0; }
+.fields { display: flex; flex-direction: column; gap: 10px; }
+.field { display: flex; justify-content: space-between; align-items: center; font-size: 13px; }
+.field .lbl { color: #999; }
+.field .val { font-weight: 600; color: #222; }
+.val.green { color: #1D9E75; }
+.val.red { color: #E24B4A; }
+.cert-id-box { text-align: center; margin-top: 20px; padding: 8px 12px; background: #f8f8f8; border-radius: 8px; font-family: monospace; font-size: 12px; color: #bbb; }
+.search-section p { font-size: 13px; color: #888; margin-bottom: 12px; text-align: center; }
+.search-section input { width: 100%; padding: 11px 14px; border: 1px solid #e0e0e0; border-radius: 10px; font-size: 14px; direction: ltr; text-align: center; font-family: monospace; }
+.search-section input:focus { outline: none; border-color: #1D9E75; }
+.search-section button { width: 100%; margin-top: 10px; padding: 12px; background: #1D9E75; color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; }
+.search-section button:hover { background: #0F6E56; }
+.footer { text-align: center; margin-top: 16px; font-size: 11px; color: #ccc; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="logo-box">
+    <h1>مركز صلة الإتقان للتدريب</h1>
+    <p>نظام التحقق من الشهادات التدريبية</p>
+  </div>
+  <div class="card">
+    <div id="loading" class="loading">
+      <div class="spinner"></div>
+      <p>جاري التحقق من الشهادة...</p>
+    </div>
+    <div id="result-valid" style="display:none">
+      <div class="status-badge valid">
+        <div class="status-icon valid">✓</div>
+        <div class="status-text">
+          <h2>شهادة موثّقة وصحيحة</h2>
+          <p id="expiry-label">سارية المفعول</p>
+        </div>
+      </div>
+      <div class="cert-name" id="out-name"></div>
+      <div class="cert-course">أتم بنجاح دورة: <strong id="out-course"></strong></div>
+      <hr>
+      <div class="fields">
+        <div class="field"><span class="lbl">تاريخ الإصدار</span><span class="val" id="out-date"></span></div>
+        <div class="field"><span class="lbl">صالحة حتى</span><span class="val" id="out-expiry"></span></div>
+        <div class="field"><span class="lbl">المدة التدريبية</span><span class="val" id="out-hours"></span></div>
+        <div class="field"><span class="lbl">المدرب</span><span class="val" id="out-trainer"></span></div>
+        <div class="field"><span class="lbl">الجهة المانحة</span><span class="val">مركز صلة الإتقان للتدريب</span></div>
+      </div>
+      <div class="cert-id-box" id="out-certid"></div>
+    </div>
+    <div id="result-invalid" style="display:none">
+      <div class="status-badge invalid">
+        <div class="status-icon invalid">✗</div>
+        <div class="status-text">
+          <h2>شهادة غير موجودة</h2>
+          <p>الرقم غير مسجّل في قاعدة البيانات</p>
+        </div>
+      </div>
+      <hr>
+      <div class="search-section">
+        <p>ابحث برقم شهادة آخر</p>
+        <input type="text" id="manual-id" placeholder="CERT-2024-001">
+        <button onclick="manualSearch()">تحقق</button>
+      </div>
+    </div>
+    <div id="result-empty" style="display:none">
+      <div class="search-section">
+        <p>أدخل رقم الشهادة للتحقق منها</p>
+        <input type="text" id="manual-id2" placeholder="CERT-2024-001">
+        <button onclick="manualSearch2()">تحقق</button>
+      </div>
+    </div>
+  </div>
+  <div class="footer">verify.silatalitqan.com — جميع الحقوق محفوظة © 2024</div>
+</div>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const firebaseConfig = {
+  apiKey: "AIzaSyDzY7iKfSJgHxeOw79ubj8yESgFcDFrv58",
+  authDomain: "silatalitqan-certs.firebaseapp.com",
+  projectId: "silatalitqan-certs",
+  storageBucket: "silatalitqan-certs.firebasestorage.app",
+  messagingSenderId: "201009758278",
+  appId: "1:201009758278:web:7b2ec02cb7ef5a4b958a47"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+async function verifyCert(certId) {
+  try {
+    const snap = await getDoc(doc(db, "certificates", certId));
+    document.getElementById("loading").style.display = "none";
+    if (snap.exists()) {
+      const d = snap.data();
+      document.getElementById("out-name").textContent = d.name;
+      document.getElementById("out-course").textContent = d.course;
+      document.getElementById("out-date").textContent = d.date;
+      document.getElementById("out-expiry").textContent = d.expiry;
+      document.getElementById("out-hours").textContent = d.hours;
+      document.getElementById("out-trainer").textContent = d.trainer;
+      document.getElementById("out-certid").textContent = "رقم الشهادة: " + certId;
+      const today = new Date().toISOString().split("T")[0];
+      if (d.expiry < today) {
+        document.getElementById("out-expiry").classList.add("red");
+        document.getElementById("expiry-label").textContent = "منتهية الصلاحية";
+      } else {
+        document.getElementById("out-expiry").classList.add("green");
+      }
+      document.getElementById("result-valid").style.display = "block";
+    } else {
+      document.getElementById("result-invalid").style.display = "block";
+    }
+  } catch(e) {
+    document.getElementById("loading").style.display = "none";
+    document.getElementById("result-invalid").style.display = "block";
+  }
+}
+const pathParts = window.location.pathname.split("/cert/");
+const certId = (pathParts[1] || new URLSearchParams(window.location.search).get("id") || "").toUpperCase();
+if (certId) { verifyCert(certId); }
+else { document.getElementById("loading").style.display = "none"; document.getElementById("result-empty").style.display = "block"; }
+window.manualSearch = () => { const id = document.getElementById("manual-id").value.trim().toUpperCase(); if(id) window.location.href="/cert/"+id; };
+window.manualSearch2 = () => { const id = document.getElementById("manual-id2").value.trim().toUpperCase(); if(id) window.location.href="/cert/"+id; };
+</script>
+</body>
+</html>
