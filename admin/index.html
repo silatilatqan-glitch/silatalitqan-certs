@@ -3,138 +3,155 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Certificate Verification - مركز صلة الإتقان للتدريب</title>
+<title>لوحة إصدار الشهادات - صلة الإتقان</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f5f5f5; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
-.container { width: 100%; max-width: 500px; }
-.logo-box { text-align: center; margin-bottom: 20px; }
-.logo-box img { width: 110px; height: 110px; object-fit: contain; }
-.logo-box p { font-size: 11px; color: #bbb; margin-top: 6px; }
-.logo-box .sub-en { font-size: 10px; color: #ccc; direction: ltr; }
-.card { background: white; border-radius: 16px; padding: 28px; box-shadow: 0 4px 24px rgba(0,0,0,0.08); border-top: 4px solid #E8520A; }
-.loading { text-align: center; padding: 32px 0; }
-.spinner { width: 40px; height: 40px; border: 3px solid #e0e0e0; border-top-color: #E8520A; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 14px; }
-@keyframes spin { to { transform: rotate(360deg); } }
-.loading p { color: #aaa; font-size: 14px; }
-.status-badge { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 12px; margin-bottom: 20px; }
-.status-badge.valid { background: #FFF3EC; }
-.status-badge.invalid { background: #FCEBEB; }
-.status-icon { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; color: white; flex-shrink: 0; }
-.status-icon.valid { background: #E8520A; }
-.status-icon.invalid { background: #E24B4A; }
-.status-text h2 { font-size: 14px; font-weight: 600; }
-.status-text h3 { font-size: 11px; color: #888; font-weight: 400; font-style: italic; }
-.valid .status-text h2 { color: #7A2800; }
-.invalid .status-text h2 { color: #A32D2D; }
-.status-text p { font-size: 11px; margin-top: 2px; color: #888; }
-.cert-name { font-size: 20px; font-weight: 700; color: #1B2A5E; text-align: center; margin-bottom: 2px; }
-.cert-name-en { font-size: 14px; color: #888; text-align: center; direction: ltr; margin-bottom: 4px; font-style: italic; }
-.cert-idnum { font-size: 12px; color: #bbb; text-align: center; font-family: monospace; margin-bottom: 14px; }
-.cert-course-label { font-size: 12px; color: #999; text-align: center; }
-.cert-course { font-size: 14px; font-weight: 700; color: #1B2A5E; text-align: center; margin-bottom: 2px; }
-.cert-course-en { font-size: 12px; color: #aaa; text-align: center; direction: ltr; font-style: italic; margin-bottom: 16px; }
-hr { border: none; border-top: 1px solid #f0f0f0; margin: 14px 0; }
-.fields { display: flex; flex-direction: column; gap: 10px; }
-.field { display: flex; justify-content: space-between; align-items: center; font-size: 13px; }
-.field .lbl { color: #999; }
-.field .lbl em { display: block; font-size: 10px; color: #ccc; font-style: italic; direction: ltr; text-align: right; }
-.field .val { font-weight: 600; color: #1B2A5E; }
-.val.green { color: #E8520A; }
-.val.red { color: #E24B4A; }
-.cert-id-box { text-align: center; margin-top: 16px; padding: 8px 12px; background: #f8f8f8; border-radius: 8px; font-family: monospace; font-size: 11px; color: #bbb; }
-.search-section p { font-size: 13px; color: #888; margin-bottom: 4px; text-align: center; }
-.search-section p.en { font-size: 11px; color: #ccc; font-style: italic; margin-bottom: 10px; }
-.search-section input { width: 100%; padding: 11px 14px; border: 1px solid #e0e0e0; border-radius: 10px; font-size: 14px; direction: ltr; text-align: center; font-family: monospace; }
-.search-section input:focus { outline: none; border-color: #E8520A; }
-.search-section button { width: 100%; margin-top: 10px; padding: 12px; background: #E8520A; color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; }
-.search-section button:hover { background: #C44208; }
-.footer { text-align: center; margin-top: 14px; font-size: 10px; color: #ccc; }
+body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f0f4f8; padding: 24px 16px; }
+.header { text-align: center; margin-bottom: 28px; }
+.header h1 { font-size: 22px; color: #E8520A; font-weight: 700; }
+.header p { font-size: 13px; color: #999; margin-top: 4px; }
+.layout { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 960px; margin: 0 auto; }
+@media(max-width: 650px) { .layout { grid-template-columns: 1fr; } }
+.card { background: white; border-radius: 16px; padding: 24px; box-shadow: 0 2px 16px rgba(0,0,0,0.07); border-top: 3px solid #E8520A; }
+.card h2 { font-size: 16px; font-weight: 600; color: #1B2A5E; margin-bottom: 18px; padding-bottom: 12px; border-bottom: 1px solid #f0f0f0; }
+.form-group { margin-bottom: 12px; }
+.form-group label { display: block; font-size: 12px; color: #888; margin-bottom: 4px; }
+.form-group label.en { direction: ltr; text-align: left; color: #aaa; font-style: italic; }
+.form-group input { width: 100%; padding: 9px 12px; border: 1px solid #e8e8e8; border-radius: 10px; font-size: 14px; font-family: inherit; background: #fafafa; color: #222; }
+.form-group input.en-input { direction: ltr; }
+.form-group input:focus { outline: none; border-color: #E8520A; background: white; }
+.section-divider { font-size: 11px; color: #E8520A; font-weight: 600; margin: 14px 0 10px; padding-bottom: 4px; border-bottom: 1px dashed #f0e0d0; }
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.btn { width: 100%; padding: 13px; background: #E8520A; color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 6px; font-family: inherit; }
+.btn:hover { background: #C44208; }
+.btn:disabled { background: #ccc; cursor: not-allowed; }
+.preview { display: none; }
+.cert-card { border: 2px solid #E8520A; border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 16px; }
+.cert-card .org { font-size: 13px; font-weight: 700; color: #1B2A5E; margin-bottom: 1px; }
+.cert-card .org-en { font-size: 11px; color: #888; margin-bottom: 12px; }
+.cert-card .label-ar { font-size: 11px; color: #999; }
+.cert-card .label-en { font-size: 10px; color: #bbb; font-style: italic; }
+.cert-card .trainee { font-size: 18px; font-weight: 700; color: #1B2A5E; margin: 4px 0 2px; }
+.cert-card .trainee-en { font-size: 14px; color: #555; margin-bottom: 2px; direction: ltr; }
+.cert-card .id-num { font-size: 11px; color: #aaa; font-family: monospace; margin-bottom: 12px; }
+.cert-card .course-ar { font-size: 13px; color: #333; font-weight: 600; margin-bottom: 2px; }
+.cert-card .course-en { font-size: 11px; color: #888; direction: ltr; margin-bottom: 14px; font-style: italic; }
+.cert-card .meta { display: flex; justify-content: center; gap: 16px; font-size: 10px; color: #888; margin-bottom: 14px; flex-wrap: wrap; }
+.cert-card .meta span strong { display: block; font-size: 12px; color: #333; margin-top: 1px; }
+.cert-card .meta span em { display: block; font-size: 9px; color: #bbb; font-style: italic; }
+#qr-box { display: flex; justify-content: center; margin: 10px 0 4px; }
+#qr-box canvas, #qr-box img { border-radius: 8px; }
+.qr-hint { font-size: 10px; color: #bbb; margin-bottom: 6px; }
+.cert-id-tag { display: inline-block; background: #f5f5f5; border-radius: 6px; padding: 4px 12px; font-family: monospace; font-size: 11px; color: #aaa; }
+.print-btn { width: 100%; padding: 11px; background: white; color: #E8520A; border: 2px solid #E8520A; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 10px; font-family: inherit; }
+.print-btn:hover { background: #FFF3EC; }
+.success-msg { display: none; background: #FFF3EC; border: 1px solid #E8520A; border-radius: 10px; padding: 12px 16px; font-size: 13px; color: #7A2800; margin-top: 12px; text-align: center; }
+.list-table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 8px; }
+.list-table th { background: #f8f8f8; padding: 8px 8px; text-align: right; color: #888; font-weight: 500; border-bottom: 1px solid #f0f0f0; }
+.list-table td { padding: 8px; border-bottom: 1px solid #f9f9f9; color: #333; }
+.list-table tr:hover td { background: #fffaf7; }
+.badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 10px; }
+.badge.active { background: #FFF3EC; color: #7A2800; }
+.badge.expired { background: #FCEBEB; color: #A32D2D; }
+.empty-state { text-align: center; padding: 32px 0; color: #ccc; font-size: 13px; }
 </style>
 </head>
 <body>
-<div class="container">
-  <div class="logo-box">
-    <img src="data:image/jpeg;base64,/9j/4QC8RXhpZgAASUkqAAgAAAAGABIBAwABAAAAAQAAABoBBQABAAAAVgAAABsBBQABAAAAXgAAACgBAwABAAAAAgAAABMCAwABAAAAAQAAAGmHBAABAAAAZgAAAAAAAABgAAAAAQAAAGAAAAABAAAABgAAkAcABAAAADAyMTABkQcABAAAAAECAwAAoAcABAAAADAxMDABoAMAAQAAAP//AAACoAQAAQAAAPQBAAADoAQAAQAAAPQBAAAAAAAA/+EO4Gh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8APD94cGFja2V0IGJlZ2luPSfvu78nIGlkPSdXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQnPz4KPHg6eG1wbWV0YSB4bWxuczp4PSdhZG9iZTpuczptZXRhLyc+CjxyZGY6UkRGIHhtbG5zOnJkZj0naHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyc+CgogPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9JycKICB4bWxuczpBdHRyaWI9J2h0dHA6Ly9ucy5hdHRyaWJ1dGlvbi5jb20vYWRzLzEuMC8nPgogIDxBdHRyaWI6QWRzPgogICA8cmRmOlNlcT4KICAgIDxyZGY6bGkgcmRmOnBhcnNlVHlwZT0nUmVzb3VyY2UnPgogICAgIDxBdHRyaWI6Q3JlYXRlZD4yMDI2LTA0LTA0PC9BdHRyaWI6Q3JlYXRlZD4KICAgICA8QXR0cmliOkRhdGE+eyZxdW90O2RvYyZxdW90OzomcXVvdDtEQUdodFVqWmdxdyZxdW90OywmcXVvdDt1c2VyJnF1b3Q7OiZxdW90O1VBRVd5UTQzcEh3JnF1b3Q7LCZxdW90O2JyYW5kJnF1b3Q7OiZxdW90O0NsYXNlIGRlIEFuYSBHYWJyaWVsYSZxdW90O308L0F0dHJpYjpEYXRhPgogICAgIDxBdHRyaWI6RXh0SWQ+NTFiYjUyMTItMmI0Ni00ZjM2LTg5NGEtN2M1YzZiNjJjNTg3PC9BdHRyaWI6RXh0SWQ+CiAgICAgPEF0dHJpYjpGYklkPjUyNTI2NTkxNDE3OTU4MDwvQXR0cmliOkZiSWQ+CiAgICAgPEF0dHJpYjpUb3VjaFR5cGU+MjwvQXR0cmliOlRvdWNoVHlwZT4KICAgIDwvcmRmOmxpPgogICA8L3JkZjpTZXE+CiAgPC9BdHRyaWI6QWRzPgogPC9yZGY6RGVzY3JpcHRpb24+CgogPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9JycKICB4bWxuczpkYz0naHR0cDovL3B1cmwub3JnL2RjL2VsZW1lbnRzLzEuMS8nPgogIDxkYzp0aXRsZT4KICAgPHJkZjpBbHQ+CiAgICA8cmRmOmxpIHhtbDpsYW5nPSd4LWRlZmF1bHQnPlNpbGF0IGFsIGl0cWFuICBMb2dvIC0gMTwvcmRmOmxpPgogICA8L3JkZjpBbHQ+CiAgPC9kYzp0aXRsZT4KIDwvcmRmOkRlc2NyaXB0aW9uPgoKIDxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PScnCiAgeG1sbnM6cGRmPSdodHRwOi8vbnMuYWRvYmUuY29tL3BkZi8xLjMvJz4KICA8cGRmOkF1dGhvcj5ZYXNtZWVuIEFsemF5aXI8L3BkZjpBdXRob3I+CiA8L3JkZjpEZXNjcmlwdGlvbj4KCiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0nJwogIHhtbG5zOnhtcD0naHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLyc+CiAgPHhtcDpDcmVhdG9yVG9vbD5DYW52YSBkb2M9REFHaHRValpncXcgdXNlcj1VQUVXeVE0M3BIdyBicmFuZD1DbGFzZSBkZSBBbmEgR2FicmllbGE8L3htcDpDcmVhdG9yVG9vbD4KIDwvcmRmOkRlc2NyaXB0aW9uPgo8L3JkZjpSREY+CjwveDp4bXBtZXRhPgogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAo8P3hwYWNrZXQgZW5kPSd3Jz8+/9sAQwAGBAUGBQQGBgUGBwcGCAoQCgoJCQoUDg8MEBcUGBgXFBYWGh0lHxobIxwWFiAsICMmJykqKRkfLTAtKDAlKCko/9sAQwEHBwcKCAoTCgoTKBoWGigoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgo/8AAEQgB9AH0AwEiAAIRAQMRAf/EAB8AAAEFAQEBAQEBAAAAAAAAAAABAgMEBQYHCAkKC//EALUQAAIBAwMCBAMFBQQEAAABfQECAwAEEQUSITFBBhNRYQcicRQygZGhCCNCscEVUtHwJDNicoIJChYXGBkaJSYnKCkqNDU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6g4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2drh4uPk5ebn6Onq8fLz9PX29/j5+v/EAB8BAAMBAQEBAQEBAQEAAAAAAAABAgMEBQYHCAkKC//EALURAAIBAgQEAwQHBQQEAAECdwABAgMRBAUhMQYSQVEHYXETIjKBCBRCkaGxwQkjM1LwFWJy0QoWJDThJfEXGBkaJicoKSo1Njc4OTpDREVGR0hJSlNUVVZXWFlaY2RlZmdoaWpzdHV2d3h5eoKDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uLj5OXm5+jp6vLz9PX29/j5+v/aAAwDAQACEQMRAD8A+qaKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKM0AFFGaTNAC0UZozQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRR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QcxnzlK7QJMJzgdNu33zVbW/h3oup6V4hsIxPYR66yvetalQWYYyw3KQCQBnj36812VFHO9x2MGw8Nx2d3pc6315ILCyayWJ/L2yKdmWbCg7v3a9CB7Vlaj8NvDt74d1DRRatb2V5dm+xA2wwz5B3xn+E5GfTk9uK7OijmYWOU0nwXb2XiWHxBd397f6vHZmxE02xR5RYNjaigZyM5qp4t+Hllr3iC31611HUtG1qKL7ObvT5FVpIs52OGVgR+Hp6V21FHO73CxxGrfDnT9S0zRLKTUdTQaVfLqMcwkR5Jp1JIeRnVs8seBgc+gAF0+Dla3u0k1nU3kuLmG580+SDH5Th1RQI9oUsCTwSdx55rqqKOdhYyB4d01fEw19LcLqn2U2bTLwXjLK2G9cFePqazvDHg218P65r2qW97ezzazMJ50mKbEYDA2bVBAxxyT0rqKKXMwOC0X4aWukWstta63q/kTX51CZGMH7x2YMykiMEI2MEAjgkZ5qHWPhRo2r3Xiee+vdRdtfMLTgNGPIaHiNoiEypAHcn3r0Oiq9pLe4rFfT7drSxgt3nluGiQIZpcb3wMZbAAyfYCrFFFQMKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAP/Z" alt="مركز صلة الإتقان للتدريب">
-    <p>نظام التحقق من الشهادات التدريبية</p>
-    <p class="sub-en">Certificate Verification System</p>
-  </div>
-  <div class="card">
-    <div id="loading" class="loading">
-      <div class="spinner"></div>
-      <p>جاري التحقق... Verifying...</p>
-    </div>
-    <div id="result-valid" style="display:none">
-      <div class="status-badge valid">
-        <div class="status-icon valid">✓</div>
-        <div class="status-text">
-          <h2>شهادة موثّقة وصحيحة</h2>
-          <h3>Verified & Authentic Certificate</h3>
-          <p id="expiry-label">سارية المفعول — Valid</p>
-        </div>
-      </div>
-      <div class="cert-name" id="out-name"></div>
-      <div class="cert-name-en" id="out-name-en"></div>
-      <div class="cert-idnum" id="out-idnum"></div>
-      <div class="cert-course-label">أتم بنجاح دورة / Successfully completed</div>
-      <div class="cert-course" id="out-course"></div>
-      <div class="cert-course-en" id="out-course-en"></div>
-      <hr>
-      <div class="fields">
-        <div class="field">
-          <span class="lbl">تاريخ الإصدار<em>Issue Date</em></span>
-          <span class="val" id="out-date"></span>
-        </div>
-        <div class="field">
-          <span class="lbl">صالحة حتى<em>Expiry Date</em></span>
-          <span class="val" id="out-expiry"></span>
-        </div>
-        <div class="field">
-          <span class="lbl">المدة التدريبية<em>Duration</em></span>
-          <span class="val" id="out-hours"></span>
-        </div>
-        <div class="field">
-          <span class="lbl">المدرب<em>Trainer</em></span>
-          <span class="val" id="out-trainer"></span>
-        </div>
-        <div class="field">
-          <span class="lbl">الجهة المانحة<em>Issuing Center</em></span>
-          <span class="val" style="font-size:11px;text-align:left">صلة الإتقان للتدريب</span>
-        </div>
-      </div>
-      <div class="cert-id-box" id="out-certid"></div>
-    </div>
-    <div id="result-invalid" style="display:none">
-      <div class="status-badge invalid">
-        <div class="status-icon invalid">✗</div>
-        <div class="status-text">
-          <h2>شهادة غير موجودة</h2>
-          <h3>Certificate Not Found</h3>
-          <p>الرقم غير مسجّل في قاعدة البيانات</p>
-        </div>
-      </div>
-      <hr>
-      <div class="search-section">
-        <p>ابحث برقم شهادة آخر</p>
-        <p class="en">Search by another certificate number</p>
-        <input type="text" id="manual-id" placeholder="CERT-SILATALITQAN-2024-001">
-        <button onclick="manualSearch()">تحقق / Verify</button>
-      </div>
-    </div>
-    <div id="result-empty" style="display:none">
-      <div class="search-section">
-        <p>أدخل رقم الشهادة للتحقق منها</p>
-        <p class="en">Enter certificate number to verify</p>
-        <input type="text" id="manual-id2" placeholder="CERT-SILATALITQAN-2024-001">
-        <button onclick="manualSearch2()">تحقق / Verify</button>
-      </div>
-    </div>
-  </div>
-  <div class="footer">verify.silatalitqan.com — © مركز صلة الإتقان للتدريب — SILAT AL ITQAN TRAINING CENTER</div>
+<div class="header">
+  <h1>لوحة إصدار الشهادات</h1>
+  <p>مركز صلة الإتقان للتدريب — Certificate Issuance Panel</p>
 </div>
+<div class="layout">
+  <div>
+    <div class="card">
+      <h2>إصدار شهادة جديدة</h2>
+
+      <div class="section-divider">بيانات المتدرب — Trainee Info</div>
+      <div class="form-group">
+        <label>اسم المتدرب (عربي)</label>
+        <input id="f-name" type="text" placeholder="الاسم الكامل بالعربية">
+      </div>
+      <div class="form-group">
+        <label class="en">Trainee Name (English)</label>
+        <input id="f-name-en" class="en-input" type="text" placeholder="Full name in English">
+      </div>
+      <div class="form-group">
+        <label>رقم الهوية / الإقامة</label>
+        <input id="f-idnum" class="en-input" type="text" placeholder="مثال: 1234567890">
+      </div>
+
+      <div class="section-divider">بيانات الدورة — Course Info</div>
+      <div class="form-group">
+        <label>اسم الدورة (عربي)</label>
+        <input id="f-course" type="text" placeholder="مثال: السلامة في أعمال الرفع">
+      </div>
+      <div class="form-group">
+        <label class="en">Course Name (English)</label>
+        <input id="f-course-en" class="en-input" type="text" placeholder="e.g. Lifting Operations Safety">
+      </div>
+
+      <div class="section-divider">التواريخ والمدرب — Dates & Trainer</div>
+      <div class="row">
+        <div class="form-group">
+          <label>تاريخ الإصدار</label>
+          <input id="f-date" type="date">
+        </div>
+        <div class="form-group">
+          <label>تاريخ الانتهاء</label>
+          <input id="f-expiry" type="date">
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group">
+          <label>اسم المدرب</label>
+          <input id="f-trainer" type="text" placeholder="اسم المدرب">
+        </div>
+        <div class="form-group">
+          <label>المدة (ساعة)</label>
+          <input id="f-hours" type="number" value="24" min="1">
+        </div>
+      </div>
+      <button class="btn" id="issue-btn" onclick="issueCert()">إصدار الشهادة وتوليد الباركود</button>
+      <div class="success-msg" id="success-msg">✓ تم حفظ الشهادة في قاعدة البيانات بنجاح</div>
+    </div>
+  </div>
+
+  <div>
+    <div class="card preview" id="preview-card">
+      <h2>معاينة الشهادة</h2>
+      <div class="cert-card">
+        <div class="org">مركز صلة الإتقان للتدريب</div>
+        <div class="org-en">SILAT AL ITQAN TRAINING CENTER</div>
+        <div class="label-ar">يشهد المركز بأن / This is to certify that</div>
+        <div class="trainee" id="p-name"></div>
+        <div class="trainee-en" id="p-name-en"></div>
+        <div class="id-num">ID / Iqama: <span id="p-idnum"></span></div>
+        <div class="label-ar">أتم بنجاح دورة / Successfully completed</div>
+        <div class="course-ar" id="p-course"></div>
+        <div class="course-en" id="p-course-en"></div>
+        <div class="meta">
+          <span>تاريخ الإصدار<em>Issue Date</em><strong id="p-date"></strong></span>
+          <span>صالحة حتى<em>Expiry Date</em><strong id="p-expiry"></strong></span>
+          <span>المدة<em>Duration</em><strong id="p-hours"></strong></span>
+          <span>المدرب<em>Trainer</em><strong id="p-trainer"></strong></span>
+        </div>
+        <div id="qr-box"></div>
+        <div class="qr-hint">Scan to verify / امسح للتحقق</div>
+        <div class="cert-id-tag" id="p-certid"></div>
+      </div>
+      <button class="print-btn" onclick="window.print()">طباعة / Print</button>
+    </div>
+    <div class="card" style="margin-top:20px">
+      <h2>الشهادات المُصدرة — Issued Certificates</h2>
+      <div id="cert-list"><div class="empty-state">لا توجد شهادات بعد</div></div>
+    </div>
+  </div>
+</div>
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, doc, setDoc, collection, getDocs, query } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 const firebaseConfig = {
   apiKey: "AIzaSyDzY7iKfSJgHxeOw79ubj8yESgFcDFrv58",
   authDomain: "silatalitqan-certs.firebaseapp.com",
@@ -145,44 +162,71 @@ const firebaseConfig = {
 };
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-async function verifyCert(certId) {
+const today = new Date().toISOString().split("T")[0];
+document.getElementById("f-date").value = today;
+const exp = new Date(); exp.setFullYear(exp.getFullYear()+2);
+document.getElementById("f-expiry").value = exp.toISOString().split("T")[0];
+let certCounter = 0;
+async function loadCerts() {
   try {
-    const snap = await getDoc(doc(db, "certificates", certId));
-    document.getElementById("loading").style.display = "none";
-    if (snap.exists()) {
-      const d = snap.data();
-      document.getElementById("out-name").textContent = d.name;
-      document.getElementById("out-name-en").textContent = d.nameEn || "";
-      document.getElementById("out-idnum").textContent = d.idNum ? "ID / Iqama: " + d.idNum : "";
-      document.getElementById("out-course").textContent = d.course;
-      document.getElementById("out-course-en").textContent = d.courseEn || "";
-      document.getElementById("out-date").textContent = d.date;
-      document.getElementById("out-expiry").textContent = d.expiry;
-      document.getElementById("out-hours").textContent = d.hours;
-      document.getElementById("out-trainer").textContent = d.trainer;
-      document.getElementById("out-certid").textContent = "Certificate No: " + certId;
-      const today = new Date().toISOString().split("T")[0];
-      if (d.expiry < today) {
-        document.getElementById("out-expiry").classList.add("red");
-        document.getElementById("expiry-label").textContent = "منتهية الصلاحية — Expired";
-      } else {
-        document.getElementById("out-expiry").classList.add("green");
-      }
-      document.getElementById("result-valid").style.display = "block";
-    } else {
-      document.getElementById("result-invalid").style.display = "block";
-    }
-  } catch(e) {
-    document.getElementById("loading").style.display = "none";
-    document.getElementById("result-invalid").style.display = "block";
-  }
+    const snap = await getDocs(query(collection(db, "certificates")));
+    certCounter = snap.size;
+    if (snap.empty) return;
+    let rows = "";
+    const todayStr = new Date().toISOString().split("T")[0];
+    snap.forEach(d => {
+      const c = d.data();
+      const active = c.expiry >= todayStr;
+      rows += `<tr>
+        <td style="font-family:monospace;font-size:10px">${d.id}</td>
+        <td>${c.name}<br><span style="color:#aaa;font-size:10px">${c.nameEn||''}</span></td>
+        <td style="font-family:monospace;font-size:10px">${c.idNum||'-'}</td>
+        <td style="max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.course}</td>
+        <td><span class="badge ${active?'active':'expired'}">${active?'سارية':'منتهية'}</span></td>
+      </tr>`;
+    });
+    document.getElementById("cert-list").innerHTML = `<table class="list-table"><thead><tr><th>الرقم</th><th>المتدرب</th><th>الهوية</th><th>الدورة</th><th>الحالة</th></tr></thead><tbody>${rows}</tbody></table>`;
+  } catch(e) {}
 }
-const pathParts = window.location.pathname.split("/cert/");
-const certId = (pathParts[1] || new URLSearchParams(window.location.search).get("id") || "").toUpperCase();
-if (certId) { verifyCert(certId); }
-else { document.getElementById("loading").style.display = "none"; document.getElementById("result-empty").style.display = "block"; }
-window.manualSearch = () => { const id = document.getElementById("manual-id").value.trim().toUpperCase(); if(id) window.location.href="/cert/"+id; };
-window.manualSearch2 = () => { const id = document.getElementById("manual-id2").value.trim().toUpperCase(); if(id) window.location.href="/cert/"+id; };
+loadCerts();
+window.issueCert = async function() {
+  const name = document.getElementById("f-name").value.trim();
+  const nameEn = document.getElementById("f-name-en").value.trim();
+  const idNum = document.getElementById("f-idnum").value.trim();
+  const course = document.getElementById("f-course").value.trim();
+  const courseEn = document.getElementById("f-course-en").value.trim();
+  const date = document.getElementById("f-date").value;
+  const expiry = document.getElementById("f-expiry").value;
+  const trainer = document.getElementById("f-trainer").value.trim();
+  const hours = document.getElementById("f-hours").value;
+  if (!name || !course || !trainer || !idNum) { alert("يرجى تعبئة جميع الحقول المطلوبة"); return; }
+  const btn = document.getElementById("issue-btn");
+  btn.disabled = true; btn.textContent = "جاري الإصدار...";
+  try {
+    certCounter++;
+    const year = new Date(date).getFullYear();
+    const certId = "CERT-SILATALITQAN-" + year + "-" + String(certCounter).padStart(3,"0");
+    await setDoc(doc(db, "certificates", certId), { name, nameEn, idNum, course, courseEn, date, expiry, hours: hours + " ساعة", trainer, createdAt: new Date().toISOString() });
+    document.getElementById("p-name").textContent = name;
+    document.getElementById("p-name-en").textContent = nameEn;
+    document.getElementById("p-idnum").textContent = idNum;
+    document.getElementById("p-course").textContent = course;
+    document.getElementById("p-course-en").textContent = courseEn;
+    document.getElementById("p-date").textContent = date;
+    document.getElementById("p-expiry").textContent = expiry;
+    document.getElementById("p-hours").textContent = hours + " ساعة";
+    document.getElementById("p-trainer").textContent = trainer;
+    document.getElementById("p-certid").textContent = certId;
+    const qrBox = document.getElementById("qr-box");
+    qrBox.innerHTML = "";
+    new QRCode(qrBox, { text: "https://verify.silatalitqan.com/cert/" + certId, width: 110, height: 110, correctLevel: QRCode.CorrectLevel.M });
+    document.getElementById("preview-card").style.display = "block";
+    document.getElementById("success-msg").style.display = "block";
+    setTimeout(() => document.getElementById("success-msg").style.display = "none", 4000);
+    loadCerts();
+  } catch(e) { alert("حدث خطأ: " + e.message); }
+  btn.disabled = false; btn.textContent = "إصدار الشهادة وتوليد الباركود";
+};
 </script>
 </body>
 </html>
