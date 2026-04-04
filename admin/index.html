@@ -5,22 +5,49 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>لوحة إصدار الشهادات - صلة الإتقان</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f0f4f8; padding: 24px 16px; }
+body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f0f4f8; }
+
+/* LOGIN PAGE */
+.login-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+.login-card { background: white; border-radius: 16px; padding: 36px; box-shadow: 0 4px 24px rgba(0,0,0,0.1); width: 100%; max-width: 380px; border-top: 4px solid #E8520A; }
+.login-logo { text-align: center; margin-bottom: 24px; }
+.login-logo h1 { font-size: 18px; color: #1B2A5E; font-weight: 700; margin-bottom: 4px; }
+.login-logo p { font-size: 12px; color: #999; }
+.login-step { display: none; }
+.login-step.active { display: block; }
+.login-step h2 { font-size: 15px; color: #333; margin-bottom: 16px; text-align: center; }
+.form-group { margin-bottom: 14px; }
+.form-group label { display: block; font-size: 12px; color: #888; margin-bottom: 5px; }
+.form-group input { width: 100%; padding: 11px 14px; border: 1px solid #e0e0e0; border-radius: 10px; font-size: 15px; font-family: inherit; direction: ltr; text-align: center; letter-spacing: 2px; }
+.form-group input:focus { outline: none; border-color: #E8520A; }
+.login-btn { width: 100%; padding: 13px; background: #E8520A; color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; font-family: inherit; margin-top: 4px; }
+.login-btn:hover { background: #C44208; }
+.login-btn:disabled { background: #ccc; cursor: not-allowed; }
+.login-error { color: #E24B4A; font-size: 12px; text-align: center; margin-top: 8px; display: none; }
+.otp-info { font-size: 12px; color: #888; text-align: center; margin-bottom: 16px; }
+.otp-timer { font-size: 12px; color: #E8520A; text-align: center; margin-top: 8px; }
+.resend-link { font-size: 12px; color: #E8520A; text-align: center; cursor: pointer; margin-top: 8px; display: none; }
+.resend-link:hover { text-decoration: underline; }
+
+/* ADMIN PAGE */
+.admin-page { display: none; padding: 24px 16px; }
 .header { text-align: center; margin-bottom: 28px; }
 .header h1 { font-size: 22px; color: #E8520A; font-weight: 700; }
 .header p { font-size: 13px; color: #999; margin-top: 4px; }
+.logout-btn { position: fixed; top: 16px; left: 16px; padding: 8px 16px; background: white; color: #E8520A; border: 1px solid #E8520A; border-radius: 8px; font-size: 13px; cursor: pointer; font-family: inherit; z-index: 100; }
 .layout { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 960px; margin: 0 auto; }
 @media(max-width: 650px) { .layout { grid-template-columns: 1fr; } }
 .card { background: white; border-radius: 16px; padding: 24px; box-shadow: 0 2px 16px rgba(0,0,0,0.07); border-top: 3px solid #E8520A; }
 .card h2 { font-size: 16px; font-weight: 600; color: #1B2A5E; margin-bottom: 18px; padding-bottom: 12px; border-bottom: 1px solid #f0f0f0; }
-.form-group { margin-bottom: 12px; }
-.form-group label { display: block; font-size: 12px; color: #888; margin-bottom: 4px; }
-.form-group label.en { direction: ltr; text-align: left; color: #aaa; font-style: italic; }
-.form-group input { width: 100%; padding: 9px 12px; border: 1px solid #e8e8e8; border-radius: 10px; font-size: 14px; font-family: inherit; background: #fafafa; color: #222; }
-.form-group input.en-input { direction: ltr; }
-.form-group input:focus { outline: none; border-color: #E8520A; background: white; }
+.form-group2 { margin-bottom: 12px; }
+.form-group2 label { display: block; font-size: 12px; color: #888; margin-bottom: 4px; }
+.form-group2 label.en { direction: ltr; text-align: left; color: #aaa; font-style: italic; }
+.form-group2 input { width: 100%; padding: 9px 12px; border: 1px solid #e8e8e8; border-radius: 10px; font-size: 14px; font-family: inherit; background: #fafafa; color: #222; }
+.form-group2 input.en-input { direction: ltr; }
+.form-group2 input:focus { outline: none; border-color: #E8520A; background: white; }
 .section-divider { font-size: 11px; color: #E8520A; font-weight: 600; margin: 14px 0 10px; padding-bottom: 4px; border-bottom: 1px dashed #f0e0d0; }
 .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .btn { width: 100%; padding: 13px; background: #E8520A; color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 6px; font-family: inherit; }
@@ -31,7 +58,6 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f0f4f8; padding
 .cert-card .org { font-size: 13px; font-weight: 700; color: #1B2A5E; margin-bottom: 1px; }
 .cert-card .org-en { font-size: 11px; color: #888; margin-bottom: 12px; }
 .cert-card .label-ar { font-size: 11px; color: #999; }
-.cert-card .label-en { font-size: 10px; color: #bbb; font-style: italic; }
 .cert-card .trainee { font-size: 18px; font-weight: 700; color: #1B2A5E; margin: 4px 0 2px; }
 .cert-card .trainee-en { font-size: 14px; color: #555; margin-bottom: 2px; direction: ltr; }
 .cert-card .id-num { font-size: 11px; color: #aaa; font-family: monospace; margin-bottom: 12px; }
@@ -48,7 +74,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f0f4f8; padding
 .print-btn:hover { background: #FFF3EC; }
 .success-msg { display: none; background: #FFF3EC; border: 1px solid #E8520A; border-radius: 10px; padding: 12px 16px; font-size: 13px; color: #7A2800; margin-top: 12px; text-align: center; }
 .list-table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 8px; }
-.list-table th { background: #f8f8f8; padding: 8px 8px; text-align: right; color: #888; font-weight: 500; border-bottom: 1px solid #f0f0f0; }
+.list-table th { background: #f8f8f8; padding: 8px; text-align: right; color: #888; font-weight: 500; border-bottom: 1px solid #f0f0f0; }
 .list-table td { padding: 8px; border-bottom: 1px solid #f9f9f9; color: #333; }
 .list-table tr:hover td { background: #fffaf7; }
 .badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 10px; }
@@ -58,93 +84,129 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f0f4f8; padding
 </style>
 </head>
 <body>
-<div class="header">
-  <h1>لوحة إصدار الشهادات</h1>
-  <p>مركز صلة الإتقان للتدريب — Certificate Issuance Panel</p>
-</div>
-<div class="layout">
-  <div>
-    <div class="card">
-      <h2>إصدار شهادة جديدة</h2>
 
-      <div class="section-divider">بيانات المتدرب — Trainee Info</div>
-      <div class="form-group">
-        <label>اسم المتدرب (عربي)</label>
-        <input id="f-name" type="text" placeholder="الاسم الكامل بالعربية">
-      </div>
-      <div class="form-group">
-        <label class="en">Trainee Name (English)</label>
-        <input id="f-name-en" class="en-input" type="text" placeholder="Full name in English">
-      </div>
-      <div class="form-group">
-        <label>رقم الهوية / الإقامة</label>
-        <input id="f-idnum" class="en-input" type="text" placeholder="مثال: 1234567890">
-      </div>
+<!-- LOGIN PAGE -->
+<div class="login-page" id="login-page">
+  <div class="login-card">
+    <div class="login-logo">
+      <h1>مركز صلة الإتقان للتدريب</h1>
+      <p>لوحة إدارة الشهادات — Admin Panel</p>
+    </div>
 
-      <div class="section-divider">بيانات الدورة — Course Info</div>
+    <!-- Step 1: Password -->
+    <div class="login-step active" id="step-password">
+      <h2>أدخل كلمة المرور</h2>
       <div class="form-group">
-        <label>اسم الدورة (عربي)</label>
-        <input id="f-course" type="text" placeholder="مثال: السلامة في أعمال الرفع">
+        <label>كلمة المرور / Password</label>
+        <input type="password" id="password-input" placeholder="••••••••" onkeypress="if(event.key==='Enter') checkPassword()">
       </div>
-      <div class="form-group">
-        <label class="en">Course Name (English)</label>
-        <input id="f-course-en" class="en-input" type="text" placeholder="e.g. Lifting Operations Safety">
-      </div>
+      <button class="login-btn" onclick="checkPassword()" id="pass-btn">دخول</button>
+      <div class="login-error" id="pass-error">كلمة المرور غير صحيحة</div>
+    </div>
 
-      <div class="section-divider">التواريخ والمدرب — Dates & Trainer</div>
-      <div class="row">
-        <div class="form-group">
-          <label>تاريخ الإصدار</label>
-          <input id="f-date" type="date">
-        </div>
-        <div class="form-group">
-          <label>تاريخ الانتهاء</label>
-          <input id="f-expiry" type="date">
-        </div>
+    <!-- Step 2: OTP -->
+    <div class="login-step" id="step-otp">
+      <h2>رمز التحقق</h2>
+      <div class="otp-info">تم إرسال رمز التحقق إلى بريدك الإلكتروني<br><strong>silatilatqan@gmail.com</strong></div>
+      <div class="form-group">
+        <label>أدخل الرمز / Enter OTP</label>
+        <input type="text" id="otp-input" placeholder="000000" maxlength="6" onkeypress="if(event.key==='Enter') checkOTP()">
       </div>
-      <div class="row">
-        <div class="form-group">
-          <label>اسم المدرب</label>
-          <input id="f-trainer" type="text" placeholder="اسم المدرب">
-        </div>
-        <div class="form-group">
-          <label>المدة (ساعة)</label>
-          <input id="f-hours" type="number" value="24" min="1">
-        </div>
-      </div>
-      <button class="btn" id="issue-btn" onclick="issueCert()">إصدار الشهادة وتوليد الباركود</button>
-      <div class="success-msg" id="success-msg">✓ تم حفظ الشهادة في قاعدة البيانات بنجاح</div>
+      <button class="login-btn" onclick="checkOTP()" id="otp-btn">تحقق / Verify</button>
+      <div class="login-error" id="otp-error">الرمز غير صحيح أو انتهت صلاحيته</div>
+      <div class="otp-timer" id="otp-timer"></div>
+      <div class="resend-link" id="resend-link" onclick="resendOTP()">إعادة إرسال الرمز</div>
     </div>
   </div>
+</div>
 
-  <div>
-    <div class="card preview" id="preview-card">
-      <h2>معاينة الشهادة</h2>
-      <div class="cert-card">
-        <div class="org">مركز صلة الإتقان للتدريب</div>
-        <div class="org-en">SILAT AL ITQAN TRAINING CENTER</div>
-        <div class="label-ar">يشهد المركز بأن / This is to certify that</div>
-        <div class="trainee" id="p-name"></div>
-        <div class="trainee-en" id="p-name-en"></div>
-        <div class="id-num">ID / Iqama: <span id="p-idnum"></span></div>
-        <div class="label-ar">أتم بنجاح دورة / Successfully completed</div>
-        <div class="course-ar" id="p-course"></div>
-        <div class="course-en" id="p-course-en"></div>
-        <div class="meta">
-          <span>تاريخ الإصدار<em>Issue Date</em><strong id="p-date"></strong></span>
-          <span>صالحة حتى<em>Expiry Date</em><strong id="p-expiry"></strong></span>
-          <span>المدة<em>Duration</em><strong id="p-hours"></strong></span>
-          <span>المدرب<em>Trainer</em><strong id="p-trainer"></strong></span>
+<!-- ADMIN PAGE -->
+<div class="admin-page" id="admin-page">
+  <button class="logout-btn" onclick="logout()">تسجيل خروج</button>
+  <div class="header">
+    <h1>لوحة إصدار الشهادات</h1>
+    <p>مركز صلة الإتقان للتدريب — Certificate Issuance Panel</p>
+  </div>
+  <div class="layout">
+    <div>
+      <div class="card">
+        <h2>إصدار شهادة جديدة</h2>
+        <div class="section-divider">بيانات المتدرب — Trainee Info</div>
+        <div class="form-group2">
+          <label>اسم المتدرب (عربي)</label>
+          <input id="f-name" type="text" placeholder="الاسم الكامل بالعربية">
         </div>
-        <div id="qr-box"></div>
-        <div class="qr-hint">Scan to verify / امسح للتحقق</div>
-        <div class="cert-id-tag" id="p-certid"></div>
+        <div class="form-group2">
+          <label class="en">Trainee Name (English)</label>
+          <input id="f-name-en" class="en-input" type="text" placeholder="Full name in English">
+        </div>
+        <div class="form-group2">
+          <label>رقم الهوية / الإقامة</label>
+          <input id="f-idnum" class="en-input" type="text" placeholder="مثال: 1234567890">
+        </div>
+        <div class="section-divider">بيانات الدورة — Course Info</div>
+        <div class="form-group2">
+          <label>اسم الدورة (عربي)</label>
+          <input id="f-course" type="text" placeholder="مثال: السلامة في أعمال الرفع">
+        </div>
+        <div class="form-group2">
+          <label class="en">Course Name (English)</label>
+          <input id="f-course-en" class="en-input" type="text" placeholder="e.g. Lifting Operations Safety">
+        </div>
+        <div class="section-divider">التواريخ والمدرب — Dates & Trainer</div>
+        <div class="row">
+          <div class="form-group2">
+            <label>تاريخ الإصدار</label>
+            <input id="f-date" type="date">
+          </div>
+          <div class="form-group2">
+            <label>تاريخ الانتهاء</label>
+            <input id="f-expiry" type="date">
+          </div>
+        </div>
+        <div class="row">
+          <div class="form-group2">
+            <label>اسم المدرب</label>
+            <input id="f-trainer" type="text" placeholder="اسم المدرب">
+          </div>
+          <div class="form-group2">
+            <label>المدة (ساعة)</label>
+            <input id="f-hours" type="number" value="24" min="1">
+          </div>
+        </div>
+        <button class="btn" id="issue-btn" onclick="issueCert()">إصدار الشهادة وتوليد الباركود</button>
+        <div class="success-msg" id="success-msg">✓ تم حفظ الشهادة في قاعدة البيانات بنجاح</div>
       </div>
-      <button class="print-btn" onclick="window.print()">طباعة / Print</button>
     </div>
-    <div class="card" style="margin-top:20px">
-      <h2>الشهادات المُصدرة — Issued Certificates</h2>
-      <div id="cert-list"><div class="empty-state">لا توجد شهادات بعد</div></div>
+    <div>
+      <div class="card preview" id="preview-card">
+        <h2>معاينة الشهادة</h2>
+        <div class="cert-card">
+          <div class="org">مركز صلة الإتقان للتدريب</div>
+          <div class="org-en">SILAT AL ITQAN TRAINING CENTER</div>
+          <div class="label-ar">يشهد المركز بأن / This is to certify that</div>
+          <div class="trainee" id="p-name"></div>
+          <div class="trainee-en" id="p-name-en"></div>
+          <div class="id-num">ID / Iqama: <span id="p-idnum"></span></div>
+          <div class="label-ar">أتم بنجاح دورة / Successfully completed</div>
+          <div class="course-ar" id="p-course"></div>
+          <div class="course-en" id="p-course-en"></div>
+          <div class="meta">
+            <span>تاريخ الإصدار<em>Issue Date</em><strong id="p-date"></strong></span>
+            <span>صالحة حتى<em>Expiry Date</em><strong id="p-expiry"></strong></span>
+            <span>المدة<em>Duration</em><strong id="p-hours"></strong></span>
+            <span>المدرب<em>Trainer</em><strong id="p-trainer"></strong></span>
+          </div>
+          <div id="qr-box"></div>
+          <div class="qr-hint">Scan to verify / امسح للتحقق</div>
+          <div class="cert-id-tag" id="p-certid"></div>
+        </div>
+        <button class="print-btn" onclick="window.print()">طباعة / Print</button>
+      </div>
+      <div class="card" style="margin-top:20px">
+        <h2>الشهادات المُصدرة — Issued Certificates</h2>
+        <div id="cert-list"><div class="empty-state">لا توجد شهادات بعد</div></div>
+      </div>
     </div>
   </div>
 </div>
@@ -152,6 +214,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f0f4f8; padding
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, doc, setDoc, collection, getDocs, query } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
 const firebaseConfig = {
   apiKey: "AIzaSyDzY7iKfSJgHxeOw79ubj8yESgFcDFrv58",
   authDomain: "silatalitqan-certs.firebaseapp.com",
@@ -162,10 +225,100 @@ const firebaseConfig = {
 };
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const today = new Date().toISOString().split("T")[0];
-document.getElementById("f-date").value = today;
-const exp = new Date(); exp.setFullYear(exp.getFullYear()+2);
-document.getElementById("f-expiry").value = exp.toISOString().split("T")[0];
+
+// EmailJS
+emailjs.init("faOLvJjvbCmOyXGU1");
+
+const CORRECT_PASSWORD = "SAT@2025";
+const ADMIN_EMAIL = "silatilatqan@gmail.com";
+const SERVICE_ID = "service_9bkxqhn";
+const TEMPLATE_ID = "template_w94lwbk";
+
+let currentOTP = "";
+let otpExpiry = null;
+let timerInterval = null;
+
+window.checkPassword = function() {
+  const pw = document.getElementById("password-input").value;
+  const err = document.getElementById("pass-error");
+  const btn = document.getElementById("pass-btn");
+  if (pw === CORRECT_PASSWORD) {
+    err.style.display = "none";
+    btn.disabled = true;
+    btn.textContent = "جاري إرسال رمز التحقق...";
+    sendOTP();
+  } else {
+    err.style.display = "block";
+  }
+};
+
+function generateOTP() {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
+function sendOTP() {
+  currentOTP = generateOTP();
+  otpExpiry = Date.now() + 5 * 60 * 1000;
+  emailjs.send(SERVICE_ID, TEMPLATE_ID, { otp: currentOTP, to_email: ADMIN_EMAIL })
+    .then(() => {
+      document.getElementById("step-password").classList.remove("active");
+      document.getElementById("step-otp").classList.add("active");
+      startTimer();
+      document.getElementById("pass-btn").disabled = false;
+      document.getElementById("pass-btn").textContent = "دخول";
+    })
+    .catch(() => {
+      document.getElementById("pass-btn").disabled = false;
+      document.getElementById("pass-btn").textContent = "دخول";
+      alert("حدث خطأ في إرسال الرمز، حاول مرة أخرى");
+    });
+}
+
+function startTimer() {
+  clearInterval(timerInterval);
+  document.getElementById("resend-link").style.display = "none";
+  timerInterval = setInterval(() => {
+    const remaining = Math.max(0, otpExpiry - Date.now());
+    const mins = Math.floor(remaining / 60000);
+    const secs = Math.floor((remaining % 60000) / 1000);
+    document.getElementById("otp-timer").textContent = `ينتهي الرمز خلال: ${mins}:${secs.toString().padStart(2,"0")}`;
+    if (remaining === 0) {
+      clearInterval(timerInterval);
+      document.getElementById("otp-timer").textContent = "انتهت صلاحية الرمز";
+      document.getElementById("resend-link").style.display = "block";
+    }
+  }, 1000);
+}
+
+window.resendOTP = function() {
+  sendOTP();
+};
+
+window.checkOTP = function() {
+  const entered = document.getElementById("otp-input").value.trim();
+  const err = document.getElementById("otp-error");
+  if (entered === currentOTP && Date.now() < otpExpiry) {
+    clearInterval(timerInterval);
+    document.getElementById("login-page").style.display = "none";
+    document.getElementById("admin-page").style.display = "block";
+    initAdmin();
+  } else {
+    err.style.display = "block";
+  }
+};
+
+window.logout = function() {
+  location.reload();
+};
+
+function initAdmin() {
+  const today = new Date().toISOString().split("T")[0];
+  document.getElementById("f-date").value = today;
+  const exp = new Date(); exp.setFullYear(exp.getFullYear()+2);
+  document.getElementById("f-expiry").value = exp.toISOString().split("T")[0];
+  loadCerts();
+}
+
 let certCounter = 0;
 async function loadCerts() {
   try {
@@ -188,7 +341,7 @@ async function loadCerts() {
     document.getElementById("cert-list").innerHTML = `<table class="list-table"><thead><tr><th>الرقم</th><th>المتدرب</th><th>الهوية</th><th>الدورة</th><th>الحالة</th></tr></thead><tbody>${rows}</tbody></table>`;
   } catch(e) {}
 }
-loadCerts();
+
 window.issueCert = async function() {
   const name = document.getElementById("f-name").value.trim();
   const nameEn = document.getElementById("f-name-en").value.trim();
