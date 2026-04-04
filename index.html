@@ -3,106 +3,155 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>التحقق من الشهادة - صلة الإتقان للتدريب</title>
+<title>لوحة إصدار الشهادات - صلة الإتقان</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f0f4f8; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
-.container { width: 100%; max-width: 500px; }
-.logo-box { text-align: center; margin-bottom: 20px; }
-.logo-box h1 { font-size: 20px; color: #1D9E75; font-weight: 700; }
-.logo-box p { font-size: 13px; color: #999; margin-top: 4px; }
-.card { background: white; border-radius: 16px; padding: 28px; box-shadow: 0 4px 24px rgba(0,0,0,0.08); }
-.loading { text-align: center; padding: 32px 0; }
-.spinner { width: 40px; height: 40px; border: 3px solid #e0e0e0; border-top-color: #1D9E75; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 14px; }
-@keyframes spin { to { transform: rotate(360deg); } }
-.loading p { color: #aaa; font-size: 14px; }
-.status-badge { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 12px; margin-bottom: 20px; }
-.status-badge.valid { background: #E1F5EE; }
-.status-badge.invalid { background: #FCEBEB; }
-.status-icon { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; color: white; flex-shrink: 0; }
-.status-icon.valid { background: #1D9E75; }
-.status-icon.invalid { background: #E24B4A; }
-.status-text h2 { font-size: 15px; font-weight: 600; }
-.valid .status-text h2 { color: #085041; }
-.invalid .status-text h2 { color: #A32D2D; }
-.status-text p { font-size: 12px; margin-top: 2px; color: #666; }
-.cert-name { font-size: 22px; font-weight: 700; color: #111; text-align: center; margin-bottom: 4px; }
-.cert-course { font-size: 14px; color: #666; text-align: center; margin-bottom: 20px; line-height: 1.5; }
-hr { border: none; border-top: 1px solid #f0f0f0; margin: 16px 0; }
-.fields { display: flex; flex-direction: column; gap: 10px; }
-.field { display: flex; justify-content: space-between; align-items: center; font-size: 13px; }
-.field .lbl { color: #999; }
-.field .val { font-weight: 600; color: #222; }
-.val.green { color: #1D9E75; }
-.val.red { color: #E24B4A; }
-.cert-id-box { text-align: center; margin-top: 20px; padding: 8px 12px; background: #f8f8f8; border-radius: 8px; font-family: monospace; font-size: 12px; color: #bbb; }
-.search-section p { font-size: 13px; color: #888; margin-bottom: 12px; text-align: center; }
-.search-section input { width: 100%; padding: 11px 14px; border: 1px solid #e0e0e0; border-radius: 10px; font-size: 14px; direction: ltr; text-align: center; font-family: monospace; }
-.search-section input:focus { outline: none; border-color: #1D9E75; }
-.search-section button { width: 100%; margin-top: 10px; padding: 12px; background: #1D9E75; color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; }
-.search-section button:hover { background: #0F6E56; }
-.footer { text-align: center; margin-top: 16px; font-size: 11px; color: #ccc; }
+body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f0f4f8; padding: 24px 16px; }
+.header { text-align: center; margin-bottom: 28px; }
+.header h1 { font-size: 22px; color: #E8520A; font-weight: 700; }
+.header p { font-size: 13px; color: #999; margin-top: 4px; }
+.layout { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 960px; margin: 0 auto; }
+@media(max-width: 650px) { .layout { grid-template-columns: 1fr; } }
+.card { background: white; border-radius: 16px; padding: 24px; box-shadow: 0 2px 16px rgba(0,0,0,0.07); border-top: 3px solid #E8520A; }
+.card h2 { font-size: 16px; font-weight: 600; color: #1B2A5E; margin-bottom: 18px; padding-bottom: 12px; border-bottom: 1px solid #f0f0f0; }
+.form-group { margin-bottom: 12px; }
+.form-group label { display: block; font-size: 12px; color: #888; margin-bottom: 4px; }
+.form-group label.en { direction: ltr; text-align: left; color: #aaa; font-style: italic; }
+.form-group input { width: 100%; padding: 9px 12px; border: 1px solid #e8e8e8; border-radius: 10px; font-size: 14px; font-family: inherit; background: #fafafa; color: #222; }
+.form-group input.en-input { direction: ltr; }
+.form-group input:focus { outline: none; border-color: #E8520A; background: white; }
+.section-divider { font-size: 11px; color: #E8520A; font-weight: 600; margin: 14px 0 10px; padding-bottom: 4px; border-bottom: 1px dashed #f0e0d0; }
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.btn { width: 100%; padding: 13px; background: #E8520A; color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 6px; font-family: inherit; }
+.btn:hover { background: #C44208; }
+.btn:disabled { background: #ccc; cursor: not-allowed; }
+.preview { display: none; }
+.cert-card { border: 2px solid #E8520A; border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 16px; }
+.cert-card .org { font-size: 13px; font-weight: 700; color: #1B2A5E; margin-bottom: 1px; }
+.cert-card .org-en { font-size: 11px; color: #888; margin-bottom: 12px; }
+.cert-card .label-ar { font-size: 11px; color: #999; }
+.cert-card .label-en { font-size: 10px; color: #bbb; font-style: italic; }
+.cert-card .trainee { font-size: 18px; font-weight: 700; color: #1B2A5E; margin: 4px 0 2px; }
+.cert-card .trainee-en { font-size: 14px; color: #555; margin-bottom: 2px; direction: ltr; }
+.cert-card .id-num { font-size: 11px; color: #aaa; font-family: monospace; margin-bottom: 12px; }
+.cert-card .course-ar { font-size: 13px; color: #333; font-weight: 600; margin-bottom: 2px; }
+.cert-card .course-en { font-size: 11px; color: #888; direction: ltr; margin-bottom: 14px; font-style: italic; }
+.cert-card .meta { display: flex; justify-content: center; gap: 16px; font-size: 10px; color: #888; margin-bottom: 14px; flex-wrap: wrap; }
+.cert-card .meta span strong { display: block; font-size: 12px; color: #333; margin-top: 1px; }
+.cert-card .meta span em { display: block; font-size: 9px; color: #bbb; font-style: italic; }
+#qr-box { display: flex; justify-content: center; margin: 10px 0 4px; }
+#qr-box canvas, #qr-box img { border-radius: 8px; }
+.qr-hint { font-size: 10px; color: #bbb; margin-bottom: 6px; }
+.cert-id-tag { display: inline-block; background: #f5f5f5; border-radius: 6px; padding: 4px 12px; font-family: monospace; font-size: 11px; color: #aaa; }
+.print-btn { width: 100%; padding: 11px; background: white; color: #E8520A; border: 2px solid #E8520A; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 10px; font-family: inherit; }
+.print-btn:hover { background: #FFF3EC; }
+.success-msg { display: none; background: #FFF3EC; border: 1px solid #E8520A; border-radius: 10px; padding: 12px 16px; font-size: 13px; color: #7A2800; margin-top: 12px; text-align: center; }
+.list-table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 8px; }
+.list-table th { background: #f8f8f8; padding: 8px 8px; text-align: right; color: #888; font-weight: 500; border-bottom: 1px solid #f0f0f0; }
+.list-table td { padding: 8px; border-bottom: 1px solid #f9f9f9; color: #333; }
+.list-table tr:hover td { background: #fffaf7; }
+.badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 10px; }
+.badge.active { background: #FFF3EC; color: #7A2800; }
+.badge.expired { background: #FCEBEB; color: #A32D2D; }
+.empty-state { text-align: center; padding: 32px 0; color: #ccc; font-size: 13px; }
 </style>
 </head>
 <body>
-<div class="container">
-  <div class="logo-box">
-    <h1>مركز صلة الإتقان للتدريب</h1>
-    <p>نظام التحقق من الشهادات التدريبية</p>
-  </div>
-  <div class="card">
-    <div id="loading" class="loading">
-      <div class="spinner"></div>
-      <p>جاري التحقق من الشهادة...</p>
-    </div>
-    <div id="result-valid" style="display:none">
-      <div class="status-badge valid">
-        <div class="status-icon valid">✓</div>
-        <div class="status-text">
-          <h2>شهادة موثّقة وصحيحة</h2>
-          <p id="expiry-label">سارية المفعول</p>
-        </div>
-      </div>
-      <div class="cert-name" id="out-name"></div>
-      <div class="cert-course">أتم بنجاح دورة: <strong id="out-course"></strong></div>
-      <hr>
-      <div class="fields">
-        <div class="field"><span class="lbl">تاريخ الإصدار</span><span class="val" id="out-date"></span></div>
-        <div class="field"><span class="lbl">صالحة حتى</span><span class="val" id="out-expiry"></span></div>
-        <div class="field"><span class="lbl">المدة التدريبية</span><span class="val" id="out-hours"></span></div>
-        <div class="field"><span class="lbl">المدرب</span><span class="val" id="out-trainer"></span></div>
-        <div class="field"><span class="lbl">الجهة المانحة</span><span class="val">مركز صلة الإتقان للتدريب</span></div>
-      </div>
-      <div class="cert-id-box" id="out-certid"></div>
-    </div>
-    <div id="result-invalid" style="display:none">
-      <div class="status-badge invalid">
-        <div class="status-icon invalid">✗</div>
-        <div class="status-text">
-          <h2>شهادة غير موجودة</h2>
-          <p>الرقم غير مسجّل في قاعدة البيانات</p>
-        </div>
-      </div>
-      <hr>
-      <div class="search-section">
-        <p>ابحث برقم شهادة آخر</p>
-        <input type="text" id="manual-id" placeholder="CERT-2024-001">
-        <button onclick="manualSearch()">تحقق</button>
-      </div>
-    </div>
-    <div id="result-empty" style="display:none">
-      <div class="search-section">
-        <p>أدخل رقم الشهادة للتحقق منها</p>
-        <input type="text" id="manual-id2" placeholder="CERT-2024-001">
-        <button onclick="manualSearch2()">تحقق</button>
-      </div>
-    </div>
-  </div>
-  <div class="footer">verify.silatalitqan.com — جميع الحقوق محفوظة © 2024</div>
+<div class="header">
+  <h1>لوحة إصدار الشهادات</h1>
+  <p>مركز صلة الإتقان للتدريب — Certificate Issuance Panel</p>
 </div>
+<div class="layout">
+  <div>
+    <div class="card">
+      <h2>إصدار شهادة جديدة</h2>
+
+      <div class="section-divider">بيانات المتدرب — Trainee Info</div>
+      <div class="form-group">
+        <label>اسم المتدرب (عربي)</label>
+        <input id="f-name" type="text" placeholder="الاسم الكامل بالعربية">
+      </div>
+      <div class="form-group">
+        <label class="en">Trainee Name (English)</label>
+        <input id="f-name-en" class="en-input" type="text" placeholder="Full name in English">
+      </div>
+      <div class="form-group">
+        <label>رقم الهوية / الإقامة</label>
+        <input id="f-idnum" class="en-input" type="text" placeholder="مثال: 1234567890">
+      </div>
+
+      <div class="section-divider">بيانات الدورة — Course Info</div>
+      <div class="form-group">
+        <label>اسم الدورة (عربي)</label>
+        <input id="f-course" type="text" placeholder="مثال: السلامة في أعمال الرفع">
+      </div>
+      <div class="form-group">
+        <label class="en">Course Name (English)</label>
+        <input id="f-course-en" class="en-input" type="text" placeholder="e.g. Lifting Operations Safety">
+      </div>
+
+      <div class="section-divider">التواريخ والمدرب — Dates & Trainer</div>
+      <div class="row">
+        <div class="form-group">
+          <label>تاريخ الإصدار</label>
+          <input id="f-date" type="date">
+        </div>
+        <div class="form-group">
+          <label>تاريخ الانتهاء</label>
+          <input id="f-expiry" type="date">
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group">
+          <label>اسم المدرب</label>
+          <input id="f-trainer" type="text" placeholder="اسم المدرب">
+        </div>
+        <div class="form-group">
+          <label>المدة (ساعة)</label>
+          <input id="f-hours" type="number" value="24" min="1">
+        </div>
+      </div>
+      <button class="btn" id="issue-btn" onclick="issueCert()">إصدار الشهادة وتوليد الباركود</button>
+      <div class="success-msg" id="success-msg">✓ تم حفظ الشهادة في قاعدة البيانات بنجاح</div>
+    </div>
+  </div>
+
+  <div>
+    <div class="card preview" id="preview-card">
+      <h2>معاينة الشهادة</h2>
+      <div class="cert-card">
+        <div class="org">مركز صلة الإتقان للتدريب</div>
+        <div class="org-en">SILAT AL ITQAN TRAINING CENTER</div>
+        <div class="label-ar">يشهد المركز بأن / This is to certify that</div>
+        <div class="trainee" id="p-name"></div>
+        <div class="trainee-en" id="p-name-en"></div>
+        <div class="id-num">ID / Iqama: <span id="p-idnum"></span></div>
+        <div class="label-ar">أتم بنجاح دورة / Successfully completed</div>
+        <div class="course-ar" id="p-course"></div>
+        <div class="course-en" id="p-course-en"></div>
+        <div class="meta">
+          <span>تاريخ الإصدار<em>Issue Date</em><strong id="p-date"></strong></span>
+          <span>صالحة حتى<em>Expiry Date</em><strong id="p-expiry"></strong></span>
+          <span>المدة<em>Duration</em><strong id="p-hours"></strong></span>
+          <span>المدرب<em>Trainer</em><strong id="p-trainer"></strong></span>
+        </div>
+        <div id="qr-box"></div>
+        <div class="qr-hint">Scan to verify / امسح للتحقق</div>
+        <div class="cert-id-tag" id="p-certid"></div>
+      </div>
+      <button class="print-btn" onclick="window.print()">طباعة / Print</button>
+    </div>
+    <div class="card" style="margin-top:20px">
+      <h2>الشهادات المُصدرة — Issued Certificates</h2>
+      <div id="cert-list"><div class="empty-state">لا توجد شهادات بعد</div></div>
+    </div>
+  </div>
+</div>
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, doc, setDoc, collection, getDocs, query } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 const firebaseConfig = {
   apiKey: "AIzaSyDzY7iKfSJgHxeOw79ubj8yESgFcDFrv58",
   authDomain: "silatalitqan-certs.firebaseapp.com",
@@ -113,41 +162,71 @@ const firebaseConfig = {
 };
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-async function verifyCert(certId) {
+const today = new Date().toISOString().split("T")[0];
+document.getElementById("f-date").value = today;
+const exp = new Date(); exp.setFullYear(exp.getFullYear()+2);
+document.getElementById("f-expiry").value = exp.toISOString().split("T")[0];
+let certCounter = 0;
+async function loadCerts() {
   try {
-    const snap = await getDoc(doc(db, "certificates", certId));
-    document.getElementById("loading").style.display = "none";
-    if (snap.exists()) {
-      const d = snap.data();
-      document.getElementById("out-name").textContent = d.name;
-      document.getElementById("out-course").textContent = d.course;
-      document.getElementById("out-date").textContent = d.date;
-      document.getElementById("out-expiry").textContent = d.expiry;
-      document.getElementById("out-hours").textContent = d.hours;
-      document.getElementById("out-trainer").textContent = d.trainer;
-      document.getElementById("out-certid").textContent = "رقم الشهادة: " + certId;
-      const today = new Date().toISOString().split("T")[0];
-      if (d.expiry < today) {
-        document.getElementById("out-expiry").classList.add("red");
-        document.getElementById("expiry-label").textContent = "منتهية الصلاحية";
-      } else {
-        document.getElementById("out-expiry").classList.add("green");
-      }
-      document.getElementById("result-valid").style.display = "block";
-    } else {
-      document.getElementById("result-invalid").style.display = "block";
-    }
-  } catch(e) {
-    document.getElementById("loading").style.display = "none";
-    document.getElementById("result-invalid").style.display = "block";
-  }
+    const snap = await getDocs(query(collection(db, "certificates")));
+    certCounter = snap.size;
+    if (snap.empty) return;
+    let rows = "";
+    const todayStr = new Date().toISOString().split("T")[0];
+    snap.forEach(d => {
+      const c = d.data();
+      const active = c.expiry >= todayStr;
+      rows += `<tr>
+        <td style="font-family:monospace;font-size:10px">${d.id}</td>
+        <td>${c.name}<br><span style="color:#aaa;font-size:10px">${c.nameEn||''}</span></td>
+        <td style="font-family:monospace;font-size:10px">${c.idNum||'-'}</td>
+        <td style="max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.course}</td>
+        <td><span class="badge ${active?'active':'expired'}">${active?'سارية':'منتهية'}</span></td>
+      </tr>`;
+    });
+    document.getElementById("cert-list").innerHTML = `<table class="list-table"><thead><tr><th>الرقم</th><th>المتدرب</th><th>الهوية</th><th>الدورة</th><th>الحالة</th></tr></thead><tbody>${rows}</tbody></table>`;
+  } catch(e) {}
 }
-const pathParts = window.location.pathname.split("/cert/");
-const certId = (pathParts[1] || new URLSearchParams(window.location.search).get("id") || "").toUpperCase();
-if (certId) { verifyCert(certId); }
-else { document.getElementById("loading").style.display = "none"; document.getElementById("result-empty").style.display = "block"; }
-window.manualSearch = () => { const id = document.getElementById("manual-id").value.trim().toUpperCase(); if(id) window.location.href="/cert/"+id; };
-window.manualSearch2 = () => { const id = document.getElementById("manual-id2").value.trim().toUpperCase(); if(id) window.location.href="/cert/"+id; };
+loadCerts();
+window.issueCert = async function() {
+  const name = document.getElementById("f-name").value.trim();
+  const nameEn = document.getElementById("f-name-en").value.trim();
+  const idNum = document.getElementById("f-idnum").value.trim();
+  const course = document.getElementById("f-course").value.trim();
+  const courseEn = document.getElementById("f-course-en").value.trim();
+  const date = document.getElementById("f-date").value;
+  const expiry = document.getElementById("f-expiry").value;
+  const trainer = document.getElementById("f-trainer").value.trim();
+  const hours = document.getElementById("f-hours").value;
+  if (!name || !course || !trainer || !idNum) { alert("يرجى تعبئة جميع الحقول المطلوبة"); return; }
+  const btn = document.getElementById("issue-btn");
+  btn.disabled = true; btn.textContent = "جاري الإصدار...";
+  try {
+    certCounter++;
+    const year = new Date(date).getFullYear();
+    const certId = "CERT-SILATALITQAN-" + year + "-" + String(certCounter).padStart(3,"0");
+    await setDoc(doc(db, "certificates", certId), { name, nameEn, idNum, course, courseEn, date, expiry, hours: hours + " ساعة", trainer, createdAt: new Date().toISOString() });
+    document.getElementById("p-name").textContent = name;
+    document.getElementById("p-name-en").textContent = nameEn;
+    document.getElementById("p-idnum").textContent = idNum;
+    document.getElementById("p-course").textContent = course;
+    document.getElementById("p-course-en").textContent = courseEn;
+    document.getElementById("p-date").textContent = date;
+    document.getElementById("p-expiry").textContent = expiry;
+    document.getElementById("p-hours").textContent = hours + " ساعة";
+    document.getElementById("p-trainer").textContent = trainer;
+    document.getElementById("p-certid").textContent = certId;
+    const qrBox = document.getElementById("qr-box");
+    qrBox.innerHTML = "";
+    new QRCode(qrBox, { text: "https://verify.silatalitqan.com/cert/" + certId, width: 110, height: 110, correctLevel: QRCode.CorrectLevel.M });
+    document.getElementById("preview-card").style.display = "block";
+    document.getElementById("success-msg").style.display = "block";
+    setTimeout(() => document.getElementById("success-msg").style.display = "none", 4000);
+    loadCerts();
+  } catch(e) { alert("حدث خطأ: " + e.message); }
+  btn.disabled = false; btn.textContent = "إصدار الشهادة وتوليد الباركود";
+};
 </script>
 </body>
 </html>
