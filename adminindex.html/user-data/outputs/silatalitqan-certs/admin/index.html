@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة إصدار الشهادات - صلة الإتقان</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f0f4f8; padding: 24px 16px; }
+.header { text-align: center; margin-bottom: 28px; }
+.header h1 { font-size: 22px; color: #1D9E75; font-weight: 700; }
+.header p { font-size: 13px; color: #999; margin-top: 4px; }
+.layout { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 900px; margin: 0 auto; }
+@media(max-width: 650px) { .layout { grid-template-columns: 1fr; } }
+.card { background: white; border-radius: 16px; padding: 24px; box-shadow: 0 2px 16px rgba(0,0,0,0.07); }
+.card h2 { font-size: 16px; font-weight: 600; color: #222; margin-bottom: 18px; padding-bottom: 12px; border-bottom: 1px solid #f0f0f0; }
+.form-group { margin-bottom: 14px; }
+.form-group label { display: block; font-size: 12px; color: #888; margin-bottom: 5px; }
+.form-group input, .form-group select { width: 100%; padding: 10px 12px; border: 1px solid #e8e8e8; border-radius: 10px; font-size: 14px; font-family: inherit; background: #fafafa; color: #222; }
+.form-group input:focus, .form-group select:focus { outline: none; border-color: #1D9E75; background: white; }
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.btn { width: 100%; padding: 13px; background: #1D9E75; color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 6px; font-family: inherit; }
+.btn:hover { background: #0F6E56; }
+.btn:disabled { background: #ccc; cursor: not-allowed; }
+.preview { display: none; }
+.cert-card { border: 2px solid #1D9E75; border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 16px; }
+.cert-card .org { font-size: 14px; font-weight: 700; color: #1D9E75; margin-bottom: 2px; }
+.cert-card .sub { font-size: 11px; color: #999; margin-bottom: 14px; }
+.cert-card .trainee { font-size: 20px; font-weight: 700; color: #111; margin-bottom: 4px; }
+.cert-card .course-line { font-size: 13px; color: #666; margin-bottom: 14px; }
+.cert-card .meta { display: flex; justify-content: center; gap: 20px; font-size: 11px; color: #888; margin-bottom: 16px; flex-wrap: wrap; }
+.cert-card .meta span strong { display: block; font-size: 12px; color: #333; margin-top: 1px; }
+#qr-box { display: flex; justify-content: center; margin: 12px 0 6px; }
+#qr-box canvas, #qr-box img { border-radius: 8px; }
+.qr-hint { font-size: 11px; color: #bbb; margin-bottom: 8px; }
+.cert-id-tag { display: inline-block; background: #f5f5f5; border-radius: 6px; padding: 4px 12px; font-family: monospace; font-size: 11px; color: #aaa; }
+.print-btn { width: 100%; padding: 11px; background: white; color: #1D9E75; border: 2px solid #1D9E75; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 10px; font-family: inherit; }
+.print-btn:hover { background: #E1F5EE; }
+.success-msg { display: none; background: #E1F5EE; border: 1px solid #5DCAA5; border-radius: 10px; padding: 12px 16px; font-size: 13px; color: #085041; margin-top: 12px; text-align: center; }
+.list-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 8px; }
+.list-table th { background: #f8f8f8; padding: 8px 10px; text-align: right; color: #888; font-weight: 500; border-bottom: 1px solid #f0f0f0; }
+.list-table td { padding: 10px; border-bottom: 1px solid #f9f9f9; color: #333; }
+.list-table tr:hover td { background: #fafffe; }
+.badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 11px; }
+.badge.active { background: #E1F5EE; color: #085041; }
+.badge.expired { background: #FCEBEB; color: #A32D2D; }
+.empty-state { text-align: center; padding: 32px 0; color: #ccc; font-size: 13px; }
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>لوحة إصدار الشهادات</h1>
+  <p>مركز صلة الإتقان للتدريب — لوحة الإدارة</p>
+</div>
+<div class="layout">
+  <div>
+    <div class="card">
+      <h2>إصدار شهادة جديدة</h2>
+      <div class="form-group">
+        <label>اسم المتدرب</label>
+        <input id="f-name" type="text" placeholder="الاسم الكامل">
+      </div>
+      <div class="form-group">
+        <label>اسم الدورة</label>
+        <input id="f-course" type="text" placeholder="مثال: السلامة في أعمال الرفع">
+      </div>
+      <div class="row">
+        <div class="form-group">
+          <label>تاريخ الإصدار</label>
+          <input id="f-date" type="date">
+        </div>
+        <div class="form-group">
+          <label>تاريخ الانتهاء</label>
+          <input id="f-expiry" type="date">
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group">
+          <label>اسم المدرب</label>
+          <input id="f-trainer" type="text" placeholder="اسم المدرب">
+        </div>
+        <div class="form-group">
+          <label>المدة (ساعة)</label>
+          <input id="f-hours" type="number" value="24" min="1">
+        </div>
+      </div>
+      <button class="btn" id="issue-btn" onclick="issueCert()">إصدار الشهادة وتوليد الباركود</button>
+      <div class="success-msg" id="success-msg">✓ تم حفظ الشهادة في قاعدة البيانات بنجاح</div>
+    </div>
+  </div>
+  <div>
+    <div class="card preview" id="preview-card">
+      <h2>معاينة الشهادة</h2>
+      <div class="cert-card">
+        <div class="org">مركز صلة الإتقان للتدريب</div>
+        <div class="sub">شهادة إتمام دورة تدريبية معتمدة</div>
+        <div class="trainee" id="p-name"></div>
+        <div class="course-line">أتم بنجاح دورة: <strong id="p-course"></strong></div>
+        <div class="meta">
+          <span>تاريخ الإصدار<strong id="p-date"></strong></span>
+          <span>صالحة حتى<strong id="p-expiry"></strong></span>
+          <span>المدة<strong id="p-hours"></strong></span>
+          <span>المدرب<strong id="p-trainer"></strong></span>
+        </div>
+        <div id="qr-box"></div>
+        <div class="qr-hint">امسح للتحقق من الشهادة</div>
+        <div class="cert-id-tag" id="p-certid"></div>
+      </div>
+      <button class="print-btn" onclick="window.print()">طباعة الشهادة</button>
+    </div>
+    <div class="card" id="list-card" style="margin-top:20px">
+      <h2>الشهادات المُصدرة</h2>
+      <div id="cert-list"><div class="empty-state">لا توجد شهادات بعد</div></div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, setDoc, collection, getDocs, orderBy, query } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const firebaseConfig = {
+  apiKey: "AIzaSyDzY7iKfSJgHxeOw79ubj8yESgFcDFrv58",
+  authDomain: "silatalitqan-certs.firebaseapp.com",
+  projectId: "silatalitqan-certs",
+  storageBucket: "silatalitqan-certs.firebasestorage.app",
+  messagingSenderId: "201009758278",
+  appId: "1:201009758278:web:7b2ec02cb7ef5a4b958a47"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const today = new Date().toISOString().split("T")[0];
+document.getElementById("f-date").value = today;
+const exp = new Date(); exp.setFullYear(exp.getFullYear()+2);
+document.getElementById("f-expiry").value = exp.toISOString().split("T")[0];
+
+let certCounter = 0;
+
+async function loadCerts() {
+  try {
+    const q = query(collection(db, "certificates"));
+    const snap = await getDocs(q);
+    certCounter = snap.size;
+    if (snap.empty) return;
+    let rows = "";
+    const todayStr = new Date().toISOString().split("T")[0];
+    snap.forEach(d => {
+      const c = d.data();
+      const active = c.expiry >= todayStr;
+      rows += `<tr>
+        <td>${d.id}</td>
+        <td>${c.name}</td>
+        <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.course}</td>
+        <td><span class="badge ${active?'active':'expired'}">${active?'سارية':'منتهية'}</span></td>
+      </tr>`;
+    });
+    document.getElementById("cert-list").innerHTML = `<table class="list-table"><thead><tr><th>الرقم</th><th>المتدرب</th><th>الدورة</th><th>الحالة</th></tr></thead><tbody>${rows}</tbody></table>`;
+  } catch(e) {}
+}
+loadCerts();
+
+window.issueCert = async function() {
+  const name = document.getElementById("f-name").value.trim();
+  const course = document.getElementById("f-course").value.trim();
+  const date = document.getElementById("f-date").value;
+  const expiry = document.getElementById("f-expiry").value;
+  const trainer = document.getElementById("f-trainer").value.trim();
+  const hours = document.getElementById("f-hours").value;
+  if (!name || !course || !trainer) { alert("يرجى تعبئة جميع الحقول"); return; }
+  const btn = document.getElementById("issue-btn");
+  btn.disabled = true; btn.textContent = "جاري الإصدار...";
+  try {
+    certCounter++;
+    const year = new Date(date).getFullYear();
+    const certId = "CERT-" + year + "-" + String(certCounter).padStart(3,"0");
+    await setDoc(doc(db, "certificates", certId), { name, course, date, expiry, hours: hours + " ساعة", trainer, createdAt: new Date().toISOString() });
+    document.getElementById("p-name").textContent = name;
+    document.getElementById("p-course").textContent = course;
+    document.getElementById("p-date").textContent = date;
+    document.getElementById("p-expiry").textContent = expiry;
+    document.getElementById("p-hours").textContent = hours + " ساعة";
+    document.getElementById("p-trainer").textContent = trainer;
+    document.getElementById("p-certid").textContent = certId;
+    const qrBox = document.getElementById("qr-box");
+    qrBox.innerHTML = "";
+    new QRCode(qrBox, { text: "https://verify.silatalitqan.com/cert/" + certId, width: 110, height: 110, correctLevel: QRCode.CorrectLevel.M });
+    document.getElementById("preview-card").style.display = "block";
+    document.getElementById("success-msg").style.display = "block";
+    setTimeout(() => document.getElementById("success-msg").style.display = "none", 4000);
+    loadCerts();
+  } catch(e) { alert("حدث خطأ: " + e.message); }
+  btn.disabled = false; btn.textContent = "إصدار الشهادة وتوليد الباركود";
+};
+</script>
+</body>
+</html>
