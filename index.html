@@ -235,26 +235,26 @@ else { document.getElementById("loading").style.display = "none"; document.getEl
 
 let currentCertData = null;
 
-function formatDateEn(dateStr) {
+window.formatDateEn = function(dateStr) {
   const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
   const d = new Date(dateStr);
   return d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
 }
 
-function openCertModal() {
+window.openCertModal = function() {
   if (!currentCertData) return;
   document.getElementById('c-name').textContent = currentCertData.nameEn || currentCertData.name;
   document.getElementById('c-course').textContent = currentCertData.courseEn || currentCertData.course;
-  document.getElementById('c-date').textContent = formatDateEn(currentCertData.date);
+  document.getElementById('c-date').textContent = window.formatDateEn(currentCertData.date);
   document.getElementById('c-num').textContent = currentCertData.certId;
   document.getElementById('cert-modal').classList.add('open');
 }
 
-function closeCertModal() {
+window.closeCertModal = function() {
   document.getElementById('cert-modal').classList.remove('open');
 }
 
-function printCert() {
+window.printCert = function() {
   const cert = document.getElementById('certificate');
   const win = window.open('', '_blank');
   win.document.write('<html><head><title>Certificate</title><link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Cinzel:wght@400;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"><style>*{margin:0;padding:0;box-sizing:border-box;}body{margin:0;}</style></head><body>' + cert.outerHTML + '</body></html>');
