@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>شهاداتي - مركز صلة الإتقان للتدريب</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f5f5f5; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 30px 16px; }
+.container { width: 100%; max-width: 520px; }
+.logo-box { text-align: center; margin-bottom: 24px; }
+.logo-box h1 { font-size: 20px; color: #1B2A5E; font-weight: 700; margin-top: 10px; }
+.logo-box p { font-size: 12px; color: #aaa; margin-top: 4px; }
+.search-card { background: white; border-radius: 16px; padding: 28px; box-shadow: 0 4px 24px rgba(0,0,0,0.08); border-top: 4px solid #E8520A; margin-bottom: 20px; }
+.search-card h2 { font-size: 16px; color: #1B2A5E; font-weight: 600; margin-bottom: 20px; text-align: center; }
+.form-group { margin-bottom: 14px; }
+.form-group label { display: block; font-size: 13px; color: #666; margin-bottom: 5px; font-weight: 500; }
+.form-group input { width: 100%; padding: 11px 14px; border: 1px solid #e0e0e0; border-radius: 10px; font-size: 14px; font-family: inherit; }
+.form-group input:focus { outline: none; border-color: #E8520A; }
+.form-group input.en-input { direction: ltr; }
+.search-btn { width: 100%; padding: 13px; background: #E8520A; color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; font-family: inherit; margin-top: 4px; }
+.search-btn:hover { background: #C44208; }
+.search-btn:disabled { background: #ccc; cursor: not-allowed; }
+.loading { text-align: center; padding: 20px; display: none; }
+.spinner { width: 36px; height: 36px; border: 3px solid #e0e0e0; border-top-color: #E8520A; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 10px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.results-card { background: white; border-radius: 16px; padding: 24px; box-shadow: 0 4px 24px rgba(0,0,0,0.08); display: none; }
+.results-card h2 { font-size: 16px; color: #1B2A5E; font-weight: 600; margin-bottom: 16px; }
+.cert-item { border: 1px solid #f0f0f0; border-radius: 12px; padding: 16px; margin-bottom: 12px; }
+.cert-item:last-child { margin-bottom: 0; }
+.cert-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+.cert-type { font-size: 10px; padding: 3px 10px; border-radius: 20px; font-weight: 600; }
+.cert-type.local { background: #EEF2FF; color: #1B2A5E; }
+.cert-type.intl { background: #FFF3EC; color: #E8520A; }
+.cert-course { font-size: 15px; font-weight: 600; color: #1B2A5E; margin-bottom: 4px; }
+.cert-issuer { font-size: 12px; color: #888; margin-bottom: 10px; }
+.cert-meta { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 12px; }
+.cert-meta span { font-size: 12px; color: #666; }
+.cert-meta span strong { color: #333; display: block; font-size: 11px; margin-bottom: 1px; }
+.expiry-warn { font-size: 11px; color: #E8520A; background: #FFF3EC; padding: 4px 10px; border-radius: 6px; margin-bottom: 10px; display: none; }
+.cert-actions { display: flex; gap: 8px; }
+.btn-download { flex: 1; padding: 10px; background: #1B2A5E; color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; text-align: center; text-decoration: none; display: block; }
+.btn-download:hover { background: #0f1e47; }
+.btn-verify { flex: 1; padding: 10px; background: white; color: #E8520A; border: 1px solid #E8520A; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; text-align: center; }
+.btn-verify:hover { background: #FFF3EC; }
+.no-results { text-align: center; padding: 32px 0; color: #888; }
+.no-results .icon { font-size: 48px; margin-bottom: 12px; }
+.no-results p { font-size: 14px; }
+.no-results small { font-size: 12px; color: #bbb; }
+.footer { text-align: center; margin-top: 20px; font-size: 11px; color: #ccc; }
+.trainer-name { font-size: 18px; font-weight: 700; color: #1B2A5E; text-align: center; margin-bottom: 4px; }
+.cert-count { font-size: 13px; color: #888; text-align: center; margin-bottom: 16px; }
+
+
+
+</style>
+</head>
+<body>
+
+
+
+<div class="container">
+  <div class="logo-box">
+    <h1>مركز صلة الإتقان للتدريب</h1>
+    <p>ابحث عن شهاداتك التدريبية</p>
+  </div>
+
+  <div class="search-card">
+    <h2>أدخل بياناتك للبحث عن شهاداتك</h2>
+    <div class="form-group">
+      <label>الاسم الرباعي بالإنجليزي</label>
+      <input type="text" id="search-name" class="en-input" placeholder="مثال: Mohammed Ali Ahmed AlQahtani" oninput="checkSearchReady()">
+    </div>
+    <div class="form-group">
+      <label>رقم الهوية / الإقامة</label>
+      <input type="text" id="search-id" class="en-input" placeholder="مثال: 1234567890" oninput="checkSearchReady()">
+    </div>
+    <button class="search-btn" id="search-btn" onclick="searchCerts()" disabled>البحث عن شهاداتي</button>
+  </div>
+
+  <div class="loading" id="loading">
+    <div class="spinner"></div>
+    <p style="color:#888;font-size:14px">جاري البحث...</p>
+  </div>
+
+  <div class="results-card" id="results-card">
+    <div class="trainer-name" id="trainer-name"></div>
+    <div class="cert-count" id="cert-count"></div>
+    <div id="certs-list"></div>
+  </div>
+
+  <div class="footer">verify.silatalitqan.com — مركز صلة الإتقان للتدريب</div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDzY7iKfSJgHxeOw79ubj8yESgFcDFrv58",
+  authDomain: "silatalitqan-certs.firebaseapp.com",
+  projectId: "silatalitqan-certs",
+  storageBucket: "silatalitqan-certs.firebasestorage.app",
+  messagingSenderId: "201009758278",
+  appId: "1:201009758278:web:7b2ec02cb7ef5a4b958a47"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+window.checkSearchReady = function() {
+  const name = document.getElementById('search-name').value.trim();
+  const id = document.getElementById('search-id').value.trim();
+  document.getElementById('search-btn').disabled = !(name && id);
+};
+
+window.searchCerts = async function() {
+  const nameInput = document.getElementById('search-name').value.trim().toLowerCase().replace(/\s+/g,' ');
+  const idInput = document.getElementById('search-id').value.trim();
+
+  document.getElementById('loading').style.display = 'block';
+  document.getElementById('results-card').style.display = 'none';
+  document.getElementById('search-btn').disabled = true;
+
+  try {
+    const now = new Date();
+    let allCerts = [];
+
+    // Search local certs
+    const localSnap = await getDocs(collection(db, "certificates"));
+    localSnap.forEach(d => {
+      const c = d.data();
+      const idMatch = String(c.idNum).replace(/\s/g,'') === idInput.replace(/\s/g,'');
+      if (idMatch) allCerts.push({ ...c, certId: d.id, type: 'local' });
+    });
+
+    // Search international certs
+    const intlSnap = await getDocs(collection(db, "international_certs"));
+    intlSnap.forEach(d => {
+      const c = d.data();
+      const idMatch = String(c.idNum).replace(/\s/g,'') === idInput.replace(/\s/g,'');
+      const nameMatch = c.nameEn.toLowerCase().replace(/\s+/g,' ').includes(nameInput) || 
+                        nameInput.includes(c.nameEn.toLowerCase().replace(/\s+/g,' '));
+      if (idMatch || (nameMatch && idMatch)) {
+        const expiry = new Date(c.expiresAt);
+        if (expiry > now) allCerts.push({ ...c, certId: d.id, type: 'intl' });
+      }
+    });
+
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('search-btn').disabled = false;
+    document.getElementById('results-card').style.display = 'block';
+
+    if (allCerts.length === 0) {
+      document.getElementById('trainer-name').textContent = '';
+      document.getElementById('cert-count').textContent = '';
+      document.getElementById('certs-list').innerHTML = `
+        <div class="no-results">
+          <div class="icon">🔍</div>
+          <p>لم يتم العثور على شهادات</p>
+          <small>تأكد من صحة الاسم بالإنجليزي ورقم الهوية</small>
+        </div>`;
+      return;
+    }
+
+    const firstName = allCerts[0].nameEn || allCerts[0].name || '';
+    document.getElementById('trainer-name').textContent = firstName;
+    document.getElementById('cert-count').textContent = `وجدنا ${allCerts.length} شهادة باسمك`;
+
+    let html = '';
+    allCerts.forEach(c => {
+      const isIntl = c.type === 'intl';
+      const expiryDate = isIntl ? new Date(c.expiresAt) : null;
+      const daysLeft = expiryDate ? Math.ceil((expiryDate - now)/(1000*60*60*24)) : null;
+      const warnExpiry = daysLeft && daysLeft <= 3;
+
+      html += `<div class="cert-item">
+        <div class="cert-header">
+          <div>
+            <div class="cert-course">${c.course || c.name || ''}</div>
+            <div class="cert-issuer">${isIntl ? (c.issuer || 'جهة دولية') : 'مركز صلة الإتقان للتدريب'}</div>
+          </div>
+          <span class="cert-type ${isIntl ? 'intl' : 'local'}">${isIntl ? 'دولية' : 'محلية'}</span>
+        </div>
+        ${warnExpiry ? `<div class="expiry-warn" style="display:block">⚠️ تنتهي الشهادة خلال ${daysLeft} أيام — حمّلها الآن</div>` : ''}
+        <div class="cert-meta">
+          ${c.date ? `<span><strong>تاريخ الإصدار</strong>${c.date}</span>` : ''}
+          ${c.expiry ? `<span><strong>صالحة حتى</strong>${c.expiry}</span>` : ''}
+          ${c.hours ? `<span><strong>المدة</strong>${c.hours}</span>` : ''}
+          ${daysLeft ? `<span><strong>تحميل متاح لـ</strong>${daysLeft} يوم</span>` : ''}
+        </div>
+        <div class="cert-actions">
+          ${isIntl ? `<a class="btn-download" href="${(c.pdfUrl||'').replace('/raw/upload/','/raw/upload/fl_attachment/')}" target="_blank" rel="noopener noreferrer">⬇️ تحميل الشهادة PDF</a>` : ''}
+          ${!isIntl ? `<button class="btn-verify" onclick="window.open('https://verify.silatalitqan.com/cert/${c.certId}','_blank')">عرض الشهادة</button>` : ''}
+        </div>
+      </div>`;
+    });
+    document.getElementById('certs-list').innerHTML = html;
+
+  } catch(err) {
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('search-btn').disabled = false;
+    alert('حدث خطأ: ' + err.message);
+  }
+};
+
+window.downloadPDF = function(url, name) {
+  fetch(url)
+    .then(r => r.blob())
+    .then(blob => {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = name + '.pdf';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    })
+    .catch(() => {
+      window.open(url, '_blank');
+    });
+};
+
+</script>
+
+
+
+</body>
+</html>
