@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الشهادات الدولية - صلة الإتقان</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f0f4f8; min-height: 100vh; }
+
+/* LOGIN */
+.login-page { position: fixed; top:0;left:0;right:0;bottom:0; background: #f0f4f8; z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; }
+.login-card { background: white; border-radius: 16px; padding: 36px; box-shadow: 0 4px 24px rgba(0,0,0,0.1); width: 100%; max-width: 360px; border-top: 4px solid #E8520A; text-align: center; }
+.login-card h1 { font-size: 18px; color: #1B2A5E; font-weight: 700; margin-bottom: 4px; }
+.login-card p { font-size: 12px; color: #aaa; margin-bottom: 24px; }
+.login-input { width: 100%; padding: 12px 14px; border: 1px solid #e0e0e0; border-radius: 10px; font-size: 15px; direction: ltr; text-align: center; letter-spacing: 2px; margin-bottom: 10px; font-family: inherit; }
+.login-input:focus { outline: none; border-color: #E8520A; }
+.login-btn { width: 100%; padding: 13px; background: #E8520A; color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; font-family: inherit; }
+.login-btn:hover { background: #C44208; }
+.login-error { color: #E24B4A; font-size: 12px; margin-top: 8px; display: none; }
+
+/* MAIN */
+.main-page { display: none; padding: 24px 16px; }
+.header { text-align: center; margin-bottom: 28px; }
+.header h1 { font-size: 22px; color: #E8520A; font-weight: 700; }
+.header p { font-size: 13px; color: #999; margin-top: 4px; }
+.card { background: white; border-radius: 16px; padding: 24px; box-shadow: 0 2px 16px rgba(0,0,0,0.07); border-top: 3px solid #E8520A; margin-bottom: 20px; max-width: 860px; margin-left: auto; margin-right: auto; }
+.card h2 { font-size: 16px; font-weight: 600; color: #1B2A5E; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid #f0f0f0; }
+.form-group { margin-bottom: 14px; }
+.form-group label { display: block; font-size: 13px; color: #666; margin-bottom: 5px; font-weight: 500; }
+.form-group input { width: 100%; padding: 10px 12px; border: 1px solid #e0e0e0; border-radius: 10px; font-size: 14px; font-family: inherit; }
+.form-group input:focus { outline: none; border-color: #E8520A; }
+
+/* Download btn */
+.dl-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; background: #1B2A5E; color: white; border: none; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; margin-bottom: 14px; }
+.dl-btn:hover { background: #0f1e47; }
+
+/* Upload boxes */
+.upload-box { border: 2px dashed #ddd; border-radius: 12px; padding: 28px; text-align: center; cursor: pointer; margin-bottom: 10px; transition: all 0.2s; }
+.upload-box:hover { border-color: #E8520A; background: #FFF8F5; }
+.upload-box.done { border-color: #1D9E75; background: #F0FDF8; }
+.upload-box p { font-size: 14px; color: #888; margin-top: 8px; }
+.upload-box .ico { font-size: 36px; }
+.upload-box input { display: none; }
+.status-text { font-size: 13px; color: #085041; text-align: center; margin-top: 6px; display: none; }
+
+/* File list */
+.file-list { max-height: 220px; overflow-y: auto; margin-top: 10px; }
+.file-item { display: flex; justify-content: space-between; align-items: center; padding: 7px 12px; background: #f8f8f8; border-radius: 8px; margin-bottom: 5px; font-size: 12px; }
+.fname { color: #333; direction: ltr; text-align: left; flex: 1; }
+.ftag { padding: 2px 10px; border-radius: 20px; font-size: 11px; flex-shrink: 0; }
+.ftag.ok { background: #E1F5EE; color: #085041; }
+.ftag.no { background: #FCEBEB; color: #A32D2D; }
+
+/* Stats */
+.stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin: 16px 0; }
+.stat { text-align: center; padding: 14px; background: #f8f8f8; border-radius: 10px; }
+.stat .num { font-size: 28px; font-weight: 700; color: #1B2A5E; }
+.stat .lbl { font-size: 12px; color: #888; margin-top: 3px; }
+.stat .num.orange { color: #E8520A; }
+
+/* Upload btn */
+.up-btn { width: 100%; padding: 14px; background: #E8520A; color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; font-family: inherit; margin-top: 4px; }
+.up-btn:hover { background: #C44208; }
+.up-btn:disabled { background: #ccc; cursor: not-allowed; }
+
+/* Progress */
+.progress-wrap { display: none; margin-top: 16px; }
+.progress-bg { background: #f0f0f0; border-radius: 20px; height: 10px; margin: 8px 0; }
+.progress-bar { background: #E8520A; height: 10px; border-radius: 20px; transition: width 0.3s; }
+.progress-txt { font-size: 13px; color: #666; text-align: center; }
+.result { display: none; margin-top: 14px; padding: 14px; border-radius: 10px; font-size: 13px; line-height: 1.8; }
+.result.ok { background: #E1F5EE; border: 1px solid #5DCAA5; color: #085041; }
+.result.err { background: #FCEBEB; border: 1px solid #F09595; color: #A32D2D; }
+
+/* Warning */
+.warn { background: #FFF8E1; border: 1px solid #FFD54F; border-radius: 10px; padding: 12px 14px; font-size: 13px; color: #795548; margin-bottom: 14px; line-height: 1.7; }
+
+/* Results table */
+.tbl { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 12px; }
+.tbl th { background: #f8f8f8; padding: 8px 10px; text-align: right; color: #888; border-bottom: 1px solid #f0f0f0; }
+.tbl td { padding: 8px 10px; border-bottom: 1px solid #f9f9f9; color: #333; }
+.badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; }
+.badge.ok { background: #E1F5EE; color: #085041; }
+.badge.no { background: #FCEBEB; color: #A32D2D; }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-page" id="login-page">
+  <div class="login-card">
+    <h1>مركز صلة الإتقان للتدريب</h1>
+    <p>لوحة إدارة الشهادات الدولية</p>
+    <input type="password" class="login-input" id="pw" placeholder="••••••••" onkeypress="if(event.key==='Enter')chkPw()">
+    <button class="login-btn" onclick="chkPw()">دخول</button>
+    <div class="login-error" id="pw-err">كلمة المرور غير صحيحة</div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main-page" id="main-page">
+  <div class="header">
+    <h1>رفع الشهادات الدولية</h1>
+    <p>مركز صلة الإتقان للتدريب — التوزيع التلقائي</p>
+  </div>
+
+  <!-- Step 1 -->
+  <div class="card">
+    <h2>الخطوة الأولى — بيانات الدورة</h2>
+    <div class="form-group">
+      <label>اسم الدورة / البرنامج التدريبي</label>
+      <input type="text" id="course-name" placeholder="مثال: NEBOSH IGC — سبتمبر 2025" oninput="chkReady()">
+    </div>
+    <div class="form-group">
+      <label>الجهة المانحة</label>
+      <input type="text" id="issuer" placeholder="مثال: NEBOSH / IOSH / OSHA / LEEA">
+    </div>
+  </div>
+
+  <!-- Step 2 -->
+  <div class="card">
+    <h2>الخطوة الثانية — رفع ملف CSV المتدربين</h2>
+    <button class="dl-btn" onclick="dlCSV()">⬇️ تحميل نموذج CSV الجاهز</button>
+    <p style="font-size:11px;color:#aaa;margin-bottom:14px">حمّل النموذج — أدخل رقم الهوية والاسم بالإنجليزي — احفظ كـ CSV — ارفعه هنا</p>
+    <div class="warn">
+      العمود الأول: <strong>ID_Number</strong> — العمود الثاني: <strong>Full_Name_English</strong><br>
+      الاسم يجب أن يطابق اسم ملف PDF بالضبط
+    </div>
+    <div class="upload-box" id="csv-box" onclick="document.getElementById('csv-in').click()">
+      <div class="ico">📊</div>
+      <p>اضغط لرفع ملف CSV</p>
+      <input type="file" id="csv-in" accept=".csv,.txt" onchange="readCSV(this)">
+    </div>
+    <div class="status-text" id="csv-status"></div>
+  </div>
+
+  <!-- Step 3 -->
+  <div class="card">
+    <h2>الخطوة الثالثة — رفع ملفات PDF</h2>
+    <div class="warn">
+      اسم كل ملف PDF يطابق الاسم بالإنجليزي بالضبط<br>
+      مثال: <span style="direction:ltr;display:inline-block">Muhammad Salah Sedeq Shabat.pdf</span>
+    </div>
+    <div class="upload-box" id="pdf-box" onclick="document.getElementById('pdf-in').click()">
+      <div class="ico">📄</div>
+      <p>اضغط لرفع ملفات PDF — يمكن رفع الكل دفعة واحدة</p>
+      <input type="file" id="pdf-in" accept=".pdf" multiple onchange="readPDFs(this)">
+    </div>
+    <div class="file-list" id="file-list"></div>
+  </div>
+
+  <!-- Step 4 -->
+  <div class="card">
+    <h2>الخطوة الرابعة — مراجعة ورفع</h2>
+    <div class="stats">
+      <div class="stat"><div class="num" id="s-trainees">0</div><div class="lbl">متدرب في CSV</div></div>
+      <div class="stat"><div class="num" id="s-pdfs">0</div><div class="lbl">ملف PDF</div></div>
+      <div class="stat"><div class="num orange" id="s-matched">0</div><div class="lbl">متطابق جاهز</div></div>
+    </div>
+    <button class="up-btn" id="up-btn" onclick="startUpload()" disabled>رفع ومعالجة تلقائياً</button>
+    <div class="progress-wrap" id="prog-wrap">
+      <div class="progress-bg"><div class="progress-bar" id="prog-bar" style="width:0%"></div></div>
+      <div class="progress-txt" id="prog-txt">جاري المعالجة...</div>
+    </div>
+    <div class="result" id="result"></div>
+  </div>
+
+  <div class="card" id="result-card" style="display:none">
+    <h2>نتيجة الرفع</h2>
+    <div id="result-table"></div>
+  </div>
+
+  <div class="card" id="existing-card" style="display:none">
+    <h2>الشهادات المرفوعة حالياً</h2>
+    <div id="existing-list"></div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, setDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const FB = { apiKey:"AIzaSyDzY7iKfSJgHxeOw79ubj8yESgFcDFrv58", authDomain:"silatalitqan-certs.firebaseapp.com", projectId:"silatalitqan-certs", storageBucket:"silatalitqan-certs.firebasestorage.app", messagingSenderId:"201009758278", appId:"1:201009758278:web:7b2ec02cb7ef5a4b958a47" };
+const app = initializeApp(FB);
+const db = getFirestore(app);
+const CLOUD = "dfogo7txw";
+const PRESET = "silatalitqan_certs";
+const DAYS = 14;
+
+let trainees = [], pdfs = [], matched = [];
+
+// Login
+window.chkPw = function() {
+  if (document.getElementById('pw').value === 'SAT@2025') {
+    document.getElementById('login-page').style.display = 'none';
+    document.getElementById('main-page').style.display = 'block';
+    loadExisting();
+  } else {
+    document.getElementById('pw-err').style.display = 'block';
+    document.getElementById('pw').value = '';
+  }
+};
+
+// Download CSV template
+window.dlCSV = function() {
+  const rows = ['ID_Number,Full_Name_English', '1234567890,Mohammed Ali Ahmed AlQahtani', '1098765432,Abdullah Saad Omar AlShammari'];
+  const blob = new Blob(['\ufeff' + rows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'trainees_template.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+};
+
+// Read CSV
+window.readCSV = function(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const text = e.target.result.replace(/\ufeff/, ''); // remove BOM
+      const lines = text.split(/\r?\n/);
+      trainees = [];
+      for (let i = 1; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (!line) continue;
+        const comma = line.indexOf(',');
+        if (comma < 0) continue;
+        const id = line.substring(0, comma).trim().replace(/"/g, '');
+        const name = line.substring(comma + 1).trim().replace(/"/g, '');
+        if (id && name && id.length >= 5) trainees.push({ idNum: id, nameEn: name });
+      }
+      document.getElementById('csv-box').classList.add('done');
+      const st = document.getElementById('csv-status');
+      st.style.display = 'block';
+      st.textContent = '✅ تم قراءة ' + trainees.length + ' متدرب';
+      document.getElementById('s-trainees').textContent = trainees.length;
+      rematch();
+    } catch(e) { alert('خطأ: ' + e.message); }
+  };
+  reader.readAsText(file, 'UTF-8');
+};
+
+// Read PDFs
+window.readPDFs = function(input) {
+  pdfs = Array.from(input.files);
+  document.getElementById('s-pdfs').textContent = pdfs.length;
+  document.getElementById('pdf-box').classList.add('done');
+  rematch();
+};
+
+function norm(s) { return s.toLowerCase().replace(/\s+/g,' ').trim(); }
+
+function rematch() {
+  matched = [];
+  const list = document.getElementById('file-list');
+  list.innerHTML = '';
+  pdfs.forEach(f => {
+    const pname = f.name.replace(/\.pdf$/i,'').trim();
+    const t = trainees.find(t => norm(t.nameEn) === norm(pname));
+    if (t) matched.push({ trainee: t, file: f });
+    const div = document.createElement('div');
+    div.className = 'file-item';
+    div.innerHTML = `<span class="fname">${f.name}</span><span class="ftag ${t?'ok':'no'}">${t ? '✓ '+t.idNum : '✗ لا يوجد تطابق'}</span>`;
+    list.appendChild(div);
+  });
+  document.getElementById('s-matched').textContent = matched.length;
+  chkReady();
+}
+
+window.chkReady = function() {
+  const ok = matched.length > 0 && document.getElementById('course-name').value.trim();
+  document.getElementById('up-btn').disabled = !ok;
+};
+
+window.startUpload = async function() {
+  const course = document.getElementById('course-name').value.trim();
+  const issuer = document.getElementById('issuer').value.trim() || 'دولية';
+  if (!course || matched.length === 0) return;
+
+  document.getElementById('up-btn').disabled = true;
+  document.getElementById('prog-wrap').style.display = 'block';
+  document.getElementById('result').style.display = 'none';
+
+  const expiry = new Date();
+  expiry.setDate(expiry.getDate() + DAYS);
+  let ok = 0, fail = 0, results = [];
+
+  for (let i = 0; i < matched.length; i++) {
+    const { trainee, file } = matched[i];
+    document.getElementById('prog-bar').style.width = Math.round(i / matched.length * 100) + '%';
+    document.getElementById('prog-txt').textContent = `${i+1} من ${matched.length}: ${trainee.nameEn}`;
+
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      fd.append('upload_preset', PRESET);
+      fd.append('folder', `silatalitqan/${course.replace(/\s+/g,'_')}`);
+      fd.append('resource_type', 'raw');
+
+      const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD}/raw/upload`, { method:'POST', body:fd });
+      const data = await res.json();
+
+      if (data.secure_url) {
+        const certId = `INTL-${trainee.idNum}-${Date.now()}`;
+        await setDoc(doc(db, 'international_certs', certId), {
+          nameEn: trainee.nameEn, idNum: trainee.idNum,
+          course, issuer, pdfUrl: data.secure_url,
+          uploadedAt: new Date().toISOString(),
+          expiresAt: expiry.toISOString(), certId
+        });
+        ok++;
+        results.push({ name: trainee.nameEn, status: 'ok' });
+      } else throw new Error(data.error?.message || 'فشل');
+    } catch(e) {
+      fail++;
+      results.push({ name: trainee.nameEn, status: 'fail', err: e.message });
+    }
+  }
+
+  document.getElementById('prog-bar').style.width = '100%';
+  document.getElementById('prog-txt').textContent = 'اكتمل!';
+
+  const r = document.getElementById('result');
+  r.style.display = 'block';
+  r.className = `result ${fail===0?'ok':'err'}`;
+  r.innerHTML = `<strong>${fail===0?'✅ تم رفع جميع الشهادات!':'⚠️ اكتمل مع أخطاء'}</strong><br>
+    رُفع: ${ok} | فشل: ${fail}<br>
+    <small>تختفي تلقائياً بعد ${DAYS} يوماً في ${expiry.toLocaleDateString('ar-SA')}</small>`;
+
+  const rc = document.getElementById('result-card');
+  const rt = document.getElementById('result-table');
+  rc.style.display = 'block';
+  let html = '<table class="tbl"><thead><tr><th>الاسم</th><th>الحالة</th></tr></thead><tbody>';
+  results.forEach(r => {
+    html += `<tr><td style="direction:ltr">${r.name}</td><td><span class="badge ${r.status==='ok'?'ok':'no'}">${r.status==='ok'?'✓ تم':'✗ فشل'}</span></td></tr>`;
+  });
+  html += '</tbody></table>';
+  rt.innerHTML = html;
+  document.getElementById('up-btn').disabled = false;
+  loadExisting();
+};
+
+async function loadExisting() {
+  try {
+    const snap = await getDocs(collection(db, 'international_certs'));
+    if (snap.empty) return;
+    const card = document.getElementById('existing-card');
+    const list = document.getElementById('existing-list');
+    card.style.display = 'block';
+    const now = new Date();
+    let html = `<p style="font-size:12px;color:#888;margin-bottom:10px">إجمالي: ${snap.size} شهادة</p>`;
+    html += '<table class="tbl"><thead><tr><th>الاسم</th><th>الدورة</th><th>الجهة</th><th>تنتهي بعد</th><th>الحالة</th></tr></thead><tbody>';
+    snap.forEach(d => {
+      const c = d.data();
+      const exp = new Date(c.expiresAt);
+      const active = exp > now;
+      const days = Math.ceil((exp-now)/(1000*60*60*24));
+      html += `<tr><td style="direction:ltr;font-size:11px">${c.nameEn}</td><td style="font-size:11px">${c.course}</td><td>${c.issuer||'-'}</td>
+        <td>${active?days+' يوم':'منتهية'}</td><td><span class="badge ${active?'ok':'no'}">${active?'نشطة':'منتهية'}</span></td></tr>`;
+    });
+    html += '</tbody></table>';
+    list.innerHTML = html;
+  } catch(e) {}
+}
+</script>
+</body>
+</html>
