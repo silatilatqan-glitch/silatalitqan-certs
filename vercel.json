@@ -4,5 +4,10 @@
     { "source": "/admin", "destination": "/admin/index.html" },
     { "source": "/international", "destination": "/international.html" },
     { "source": "/mycerts", "destination": "/mycerts.html" }
-  ]
+  ],
+  "functions": {
+    "api/download.js": {
+      "runtime": "nodejs18.x"
+    }
+  }
 }
