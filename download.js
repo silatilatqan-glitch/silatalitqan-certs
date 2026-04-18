@@ -5,7 +5,6 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'URL required' });
   }
 
-  // Only allow Cloudinary URLs
   if (!url.includes('cloudinary.com')) {
     return res.status(403).json({ error: 'Forbidden' });
   }
