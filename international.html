@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الشهادات الدولية - صلة الإتقان</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+
+.login-overlay { position:fixed; top:0;left:0;right:0;bottom:0; background:#f0f4f8; z-index:9999; display:flex; align-items:center; justify-content:center; }
+.login-card { background:white; border-radius:16px; padding:36px; box-shadow:0 4px 24px rgba(0,0,0,0.1); width:100%; max-width:380px; border-top:4px solid #E8520A; }
+.login-card h1 { font-size:18px; color:#1B2A5E; font-weight:700; text-align:center; margin-bottom:4px; }
+.login-card p { font-size:12px; color:#999; text-align:center; margin-bottom:24px; }
+.login-step { display:none; }
+.login-step.active { display:block; }
+.login-step h2 { font-size:15px; color:#333; margin-bottom:16px; text-align:center; }
+.login-input { width:100%; padding:11px 14px; border:1px solid #e0e0e0; border-radius:10px; font-size:15px; font-family:inherit; direction:ltr; text-align:center; letter-spacing:2px; margin-bottom:10px; }
+.login-input:focus { outline:none; border-color:#E8520A; }
+.login-btn { width:100%; padding:13px; background:#E8520A; color:white; border:none; border-radius:10px; font-size:15px; font-weight:600; cursor:pointer; font-family:inherit; }
+.login-btn:hover { background:#C44208; }
+.login-btn:disabled { background:#ccc; cursor:not-allowed; }
+.login-error { color:#E24B4A; font-size:12px; text-align:center; margin-top:8px; display:none; }
+.otp-info { font-size:12px; color:#888; text-align:center; margin-bottom:16px; line-height:1.6; }
+.otp-timer { font-size:12px; color:#E8520A; text-align:center; margin-top:8px; }
+.resend-link { font-size:12px; color:#E8520A; text-align:center; cursor:pointer; margin-top:8px; display:none; }
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f0f4f8; padding: 24px 16px; direction: rtl; }
+.header { text-align: center; margin-bottom: 28px; }
+.header h1 { font-size: 22px; color: #E8520A; font-weight: 700; }
+.header p { font-size: 13px; color: #999; margin-top: 4px; }
+.card { background: white; border-radius: 16px; padding: 24px; box-shadow: 0 2px 16px rgba(0,0,0,0.07); border-top: 3px solid #E8520A; margin-bottom: 20px; max-width: 900px; margin-left: auto; margin-right: auto; }
+.card h2 { font-size: 16px; font-weight: 600; color: #1B2A5E; margin-bottom: 18px; padding-bottom: 12px; border-bottom: 1px solid #f0f0f0; }
+.form-group { margin-bottom: 14px; }
+.form-group label { display: block; font-size: 13px; color: #666; margin-bottom: 5px; font-weight: 500; }
+.form-group input[type="text"] { width: 100%; padding: 10px 12px; border: 1px solid #e0e0e0; border-radius: 10px; font-size: 14px; font-family: inherit; }
+.form-group input[type="text"]:focus { outline: none; border-color: #E8520A; }
+.upload-box { border: 2px dashed #e0e0e0; border-radius: 12px; padding: 24px; text-align: center; cursor: pointer; margin-bottom: 12px; }
+.upload-box:hover { border-color: #E8520A; background: #FFF8F5; }
+.upload-box.has-file { border-color: #1D9E75; background: #F0FDF8; }
+.upload-box p { font-size: 14px; color: #888; margin-top: 8px; }
+.upload-box .icon { font-size: 32px; }
+.upload-box input { display: none; }
+.file-list { margin-top: 10px; max-height: 220px; overflow-y: auto; }
+.file-item { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; background: #f8f8f8; border-radius: 6px; margin-bottom: 4px; font-size: 12px; }
+.file-item .fname { color: #333; direction: ltr; text-align: left; flex: 1; }
+.file-item .fstatus { font-size: 11px; padding: 2px 8px; border-radius: 10px; flex-shrink: 0; }
+.fstatus.matched { background: #E1F5EE; color: #085041; }
+.fstatus.unmatched { background: #FCEBEB; color: #A32D2D; }
+.btn-primary { background: #E8520A; color: white; width: 100%; margin-top: 8px; padding: 13px; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; font-family: inherit; }
+.btn-primary:hover { background: #C44208; }
+.btn-primary:disabled { background: #ccc; cursor: not-allowed; }
+.progress-box { display: none; margin-top: 16px; }
+.progress-bar-wrap { background: #f0f0f0; border-radius: 20px; height: 10px; margin: 8px 0; }
+.progress-bar { background: #E8520A; height: 10px; border-radius: 20px; transition: width 0.3s; }
+.progress-text { font-size: 13px; color: #666; text-align: center; }
+.result-box { display: none; margin-top: 16px; padding: 14px; border-radius: 10px; font-size: 13px; line-height: 1.8; }
+.result-box.success { background: #E1F5EE; border: 1px solid #5DCAA5; color: #085041; }
+.result-box.error { background: #FCEBEB; border: 1px solid #F09595; color: #A32D2D; }
+.stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 16px; }
+.stat-box { text-align: center; padding: 12px; background: #f8f8f8; border-radius: 10px; }
+.stat-box .num { font-size: 28px; font-weight: 700; color: #1B2A5E; }
+.stat-box .lbl { font-size: 12px; color: #888; margin-top: 2px; }
+.cert-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 12px; }
+.cert-table th { background: #f8f8f8; padding: 8px 10px; text-align: right; color: #888; font-weight: 500; border-bottom: 1px solid #f0f0f0; }
+.cert-table td { padding: 8px 10px; border-bottom: 1px solid #f9f9f9; color: #333; }
+.badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; }
+.badge.active { background: #E1F5EE; color: #085041; }
+.badge.expired { background: #FCEBEB; color: #A32D2D; }
+.warning-box { background: #FFF8E1; border: 1px solid #FFD54F; border-radius: 10px; padding: 12px 14px; font-size: 13px; color: #795548; margin-bottom: 16px; }
+</style>
+</head>
+<body>
+
+<div class="login-overlay" id="login-overlay">
+  <div class="login-card">
+    <h1>مركز صلة الإتقان للتدريب</h1>
+    <p>لوحة إدارة الشهادات الدولية</p>
+    <div class="login-step active" id="step-pw">
+      <h2>أدخل كلمة المرور</h2>
+      <input type="password" class="login-input" id="pw-input" placeholder="••••••••" onkeypress="if(event.key==='Enter') checkPw()">
+      <button class="login-btn" id="pw-btn" onclick="checkPw()">دخول</button>
+      <div class="login-error" id="pw-error">كلمة المرور غير صحيحة</div>
+    </div>
+    <div class="login-step" id="step-otp">
+      <h2>رمز التحقق</h2>
+      <div class="otp-info">تم إرسال رمز التحقق إلى<br><strong>silatilatqan@gmail.com</strong></div>
+      <input type="text" class="login-input" id="otp-input" placeholder="000000" maxlength="6" onkeypress="if(event.key==='Enter') checkOtp()">
+      <button class="login-btn" id="otp-btn" onclick="checkOtp()">تحقق / Verify</button>
+      <div class="login-error" id="otp-error">الرمز غير صحيح أو انتهت صلاحيته</div>
+      <div class="otp-timer" id="otp-timer"></div>
+      <div class="resend-link" id="resend-link" onclick="sendOtp()">إعادة إرسال الرمز</div>
+    </div>
+  </div>
+</div>
+
+<div class="header">
+  <h1>رفع الشهادات الدولية</h1>
+  <p>مركز صلة الإتقان للتدريب — نظام التوزيع التلقائي</p>
+</div>
+
+<div class="card">
+  <h2>الخطوة الأولى — بيانات الدورة</h2>
+  <div class="form-group">
+    <label>اسم الدورة / البرنامج التدريبي</label>
+    <input type="text" id="course-name" placeholder="مثال: NEBOSH IGC — سبتمبر 2025" oninput="checkReady()">
+  </div>
+  <div class="form-group">
+    <label>الجهة المانحة</label>
+    <input type="text" id="issuer-name" placeholder="مثال: NEBOSH / IOSH / OSHA / LEEA">
+  </div>
+</div>
+
+<div class="card">
+  <h2>الخطوة الثانية — رفع ملف Excel المتدربين</h2>
+  <div class="warning-box">
+    تأكد أن الملف يحتوي على عمود <strong>رقم الهوية</strong> وعمود <strong>الاسم الرباعي بالإنجليزي للاعتماد الدولي</strong>
+  </div>
+  <div class="upload-box" id="excel-box" onclick="document.getElementById('excel-input').click()">
+    <div class="icon">📊</div>
+    <p>اضغط لرفع ملف Excel</p>
+    <input type="file" id="excel-input" accept=".xlsx,.xls" onchange="handleExcel(this)">
+  </div>
+  <div id="excel-status" style="font-size:13px;color:#085041;text-align:center;display:none;margin-top:8px"></div>
+</div>
+
+<div class="card">
+  <h2>الخطوة الثالثة — رفع ملفات PDF الشهادات</h2>
+  <div class="warning-box">
+    اسم كل ملف PDF يجب أن يطابق <strong>الاسم الرباعي بالإنجليزي</strong> بالضبط كما في ملف Excel
+    <br>مثال: <span style="direction:ltr;display:inline-block">Mohammed Hussain Ali AlGuziwi.pdf</span>
+  </div>
+  <div class="upload-box" id="pdf-box" onclick="document.getElementById('pdf-input').click()">
+    <div class="icon">📄</div>
+    <p>اضغط لرفع ملفات PDF — يمكن رفع جميعها دفعة واحدة</p>
+    <input type="file" id="pdf-input" accept=".pdf" multiple onchange="handlePDFs(this)">
+  </div>
+  <div class="file-list" id="file-list"></div>
+</div>
+
+<div class="card">
+  <h2>الخطوة الرابعة — مراجعة ورفع</h2>
+  <div class="stats-row">
+    <div class="stat-box"><div class="num" id="stat-trainees">0</div><div class="lbl">متدرب في Excel</div></div>
+    <div class="stat-box"><div class="num" id="stat-pdfs">0</div><div class="lbl">ملف PDF</div></div>
+    <div class="stat-box"><div class="num" id="stat-matched" style="color:#E8520A">0</div><div class="lbl">متطابق جاهز للرفع</div></div>
+  </div>
+  <button class="btn-primary" id="upload-btn" onclick="startUpload()" disabled>رفع ومعالجة تلقائياً</button>
+  <div class="progress-box" id="progress-box">
+    <div class="progress-bar-wrap"><div class="progress-bar" id="progress-bar" style="width:0%"></div></div>
+    <div class="progress-text" id="progress-text">جاري المعالجة...</div>
+  </div>
+  <div class="result-box" id="result-box"></div>
+</div>
+
+<div class="card" id="results-card" style="display:none">
+  <h2>نتيجة الرفع</h2>
+  <div id="results-table"></div>
+</div>
+
+<div class="card" id="existing-card" style="display:none">
+  <h2>الشهادات المرفوعة حالياً</h2>
+  <div id="existing-list"></div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, setDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDzY7iKfSJgHxeOw79ubj8yESgFcDFrv58",
+  authDomain: "silatalitqan-certs.firebaseapp.com",
+  projectId: "silatalitqan-certs",
+  storageBucket: "silatalitqan-certs.firebasestorage.app",
+  messagingSenderId: "201009758278",
+  appId: "1:201009758278:web:7b2ec02cb7ef5a4b958a47"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const CLOUD = "dfogo7txw";
+const PRESET = "silatalitqan_certs";
+const EXPIRY_DAYS = 14;
+
+let trainees = [];
+let pdfFiles = [];
+let matchedPairs = [];
+
+function normalize(s) {
+  return s.toLowerCase().replace(/\s+/g, ' ').trim();
+}
+
+window.handleExcel = function(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const wb = XLSX.read(e.target.result, { type: 'array' });
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const data = XLSX.utils.sheet_to_json(ws);
+      trainees = [];
+      data.forEach(row => {
+        const nameEn = (
+          row['الاسم الرباعي بالانجليزي للاعتماد الدولي '] ||
+          row['الاسم الرباعي بالانجليزي للاعتماد الدولي'] ||
+          row['الاسم الرباعي بالانجليزي'] ||
+          row['Full Name'] || ''
+        ).toString().trim();
+        const idRaw = row['رقم الهوية '] || row['رقم الهوية'] || row['ID'] || '';
+        const idNum = String(idRaw).replace(/\.0+$/, '').replace(/\s/g,'').trim();
+        const phone = String(row['رقم الجوال '] || row['رقم الجوال'] || '').trim();
+        const email = String(row['البريد الالكتروني '] || row['البريد الالكتروني'] || '').trim();
+        const nameAr1 = String(row['الاسم الاول بالعربي'] || '').trim();
+        const nameAr2 = String(row['الاسم الثاني بالعربي'] || '').trim();
+        const nameAr3 = String(row['الاسم الثالث بالعربي'] || '').trim();
+        const nameAr4 = String(row['الاسم الاخير بالعربي'] || '').trim();
+        const nameAr = [nameAr1, nameAr2, nameAr3, nameAr4].filter(Boolean).join(' ');
+        if (nameEn && idNum) trainees.push({ nameEn, idNum, phone, email, nameAr });
+      });
+      document.getElementById('excel-box').classList.add('has-file');
+      document.getElementById('excel-status').style.display = 'block';
+      document.getElementById('excel-status').textContent = `✅ تم قراءة ${trainees.length} متدرب`;
+      document.getElementById('stat-trainees').textContent = trainees.length;
+      rematch();
+    } catch(err) {
+      alert('خطأ في قراءة الملف: ' + err.message);
+    }
+  };
+  reader.readAsArrayBuffer(file);
+};
+
+window.handlePDFs = function(input) {
+  pdfFiles = Array.from(input.files);
+  document.getElementById('stat-pdfs').textContent = pdfFiles.length;
+  document.getElementById('pdf-box').classList.add('has-file');
+  rematch();
+};
+
+function rematch() {
+  matchedPairs = [];
+  const listEl = document.getElementById('file-list');
+  listEl.innerHTML = '';
+  pdfFiles.forEach(file => {
+    const pdfName = file.name.replace(/\.pdf$/i, '').trim();
+    const matched = trainees.find(t => normalize(t.nameEn) === normalize(pdfName));
+    if (matched) matchedPairs.push({ trainee: matched, file });
+    const item = document.createElement('div');
+    item.className = 'file-item';
+    item.innerHTML = `<span class="fname">${file.name}</span>
+      <span class="fstatus ${matched ? 'matched' : 'unmatched'}">${matched ? '✓ متطابق: ' + (matched?.nameAr || '') : '✗ لا يوجد تطابق'}</span>`;
+    listEl.appendChild(item);
+  });
+  document.getElementById('stat-matched').textContent = matchedPairs.length;
+  checkReady();
+}
+
+window.checkReady = function() {
+  const ok = matchedPairs.length > 0 && document.getElementById('course-name').value.trim();
+  document.getElementById('upload-btn').disabled = !ok;
+};
+
+window.startUpload = async function() {
+  const courseName = document.getElementById('course-name').value.trim();
+  const issuerName = document.getElementById('issuer-name').value.trim() || 'دولية';
+  if (!courseName || matchedPairs.length === 0) return;
+
+  document.getElementById('upload-btn').disabled = true;
+  document.getElementById('progress-box').style.display = 'block';
+  document.getElementById('result-box').style.display = 'none';
+
+  let uploaded = 0, failed = 0;
+  const results = [];
+  const expiryDate = new Date();
+  expiryDate.setDate(expiryDate.getDate() + EXPIRY_DAYS);
+
+  for (let i = 0; i < matchedPairs.length; i++) {
+    const { trainee, file } = matchedPairs[i];
+    document.getElementById('progress-bar').style.width = Math.round((i / matchedPairs.length) * 100) + '%';
+    document.getElementById('progress-text').textContent = `${i + 1} من ${matchedPairs.length}: ${trainee.nameEn}`;
+
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      fd.append('upload_preset', PRESET);
+      fd.append('folder', `silatalitqan/${courseName.replace(/\s+/g,'_')}`);
+      fd.append('resource_type', 'raw');
+
+      const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD}/raw/upload`, { method: 'POST', body: fd });
+      const data = await res.json();
+
+      if (data.secure_url) {
+        const certId = `INTL-${trainee.idNum}-${Date.now()}`;
+        await setDoc(doc(db, "international_certs", certId), {
+          nameEn: trainee.nameEn,
+          nameAr: trainee.nameAr,
+          idNum: trainee.idNum,
+          phone: trainee.phone,
+          email: trainee.email,
+          course: courseName,
+          issuer: issuerName,
+          pdfUrl: data.secure_url,
+          cloudinaryId: data.public_id,
+          uploadedAt: new Date().toISOString(),
+          expiresAt: expiryDate.toISOString(),
+          certId
+        });
+        uploaded++;
+        results.push({ name: trainee.nameEn, nameAr: trainee.nameAr, status: 'success', url: data.secure_url });
+      } else {
+        throw new Error(data.error?.message || 'فشل الرفع');
+      }
+    } catch(err) {
+      failed++;
+      results.push({ name: trainee.nameEn, nameAr: trainee.nameAr, status: 'error', err: err.message });
+    }
+  }
+
+  document.getElementById('progress-bar').style.width = '100%';
+  document.getElementById('progress-text').textContent = 'اكتمل!';
+
+  const rb = document.getElementById('result-box');
+  rb.style.display = 'block';
+  rb.className = `result-box ${failed === 0 ? 'success' : 'error'}`;
+  rb.innerHTML = `<strong>${failed === 0 ? '✅ تم رفع جميع الشهادات بنجاح!' : '⚠️ اكتمل مع أخطاء'}</strong><br>
+    رُفع: ${uploaded} | فشل: ${failed}<br>
+    <small>ستختفي تلقائياً بعد ${EXPIRY_DAYS} يوماً في ${expiryDate.toLocaleDateString('ar-SA')}</small>`;
+
+  const rc = document.getElementById('results-card');
+  const rt = document.getElementById('results-table');
+  rc.style.display = 'block';
+  let html = '<table class="cert-table"><thead><tr><th>الاسم بالإنجليزي</th><th>الاسم بالعربي</th><th>الحالة</th></tr></thead><tbody>';
+  results.forEach(r => {
+    html += `<tr><td style="direction:ltr">${r.name}</td><td>${r.nameAr||'-'}</td>
+      <td><span class="badge ${r.status==='success'?'active':'expired'}">${r.status==='success'?'✓ تم':'✗ فشل'}</span></td></tr>`;
+  });
+  html += '</tbody></table>';
+  rt.innerHTML = html;
+  document.getElementById('upload-btn').disabled = false;
+  loadExisting();
+};
+
+async function loadExisting() {
+  try {
+    const snap = await getDocs(collection(db, "international_certs"));
+    if (snap.empty) return;
+    const card = document.getElementById('existing-card');
+    const list = document.getElementById('existing-list');
+    card.style.display = 'block';
+    const now = new Date();
+    let html = `<p style="font-size:12px;color:#888;margin-bottom:10px">إجمالي: ${snap.size} شهادة</p>`;
+    html += '<table class="cert-table"><thead><tr><th>الاسم</th><th>الدورة</th><th>الجهة</th><th>تنتهي بعد</th><th>الحالة</th></tr></thead><tbody>';
+    snap.forEach(d => {
+      const c = d.data();
+      const exp = new Date(c.expiresAt);
+      const active = exp > now;
+      const days = Math.ceil((exp - now)/(1000*60*60*24));
+      html += `<tr><td style="direction:ltr;font-size:11px">${c.nameEn}</td><td style="font-size:11px">${c.course}</td>
+        <td>${c.issuer||'-'}</td><td>${active?days+' يوم':'منتهية'}</td>
+        <td><span class="badge ${active?'active':'expired'}">${active?'نشطة':'منتهية'}</span></td></tr>`;
+    });
+    html += '</tbody></table>';
+    list.innerHTML = html;
+  } catch(e) {}
+}
+loadExisting();
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<script>
+emailjs.init("faOLvJjvbCmOyXGU1");
+const PASS = "SAT@2025";
+const ADMIN_EMAIL = "silatilatqan@gmail.com";
+const SVC = "service_9bkxqhn";
+const TPL = "template_w94lwbk";
+let otp = "", otpExp = null, timer = null;
+
+function checkPw() {
+  const pw = document.getElementById('pw-input').value;
+  if (pw === PASS) {
+    document.getElementById('pw-error').style.display = 'none';
+    document.getElementById('pw-btn').disabled = true;
+    document.getElementById('pw-btn').textContent = 'جاري الإرسال...';
+    sendOtp();
+  } else {
+    document.getElementById('pw-error').style.display = 'block';
+  }
+}
+
+function sendOtp() {
+  otp = Math.floor(100000 + Math.random() * 900000).toString();
+  otpExp = Date.now() + 5 * 60 * 1000;
+  emailjs.send(SVC, TPL, { otp, to_email: ADMIN_EMAIL })
+    .then(() => {
+      document.getElementById('step-pw').classList.remove('active');
+      document.getElementById('step-otp').classList.add('active');
+      document.getElementById('pw-btn').disabled = false;
+      document.getElementById('pw-btn').textContent = 'دخول';
+      startTimer();
+    })
+    .catch(() => {
+      document.getElementById('pw-btn').disabled = false;
+      document.getElementById('pw-btn').textContent = 'دخول';
+      alert('خطأ في إرسال الرمز');
+    });
+}
+
+function startTimer() {
+  clearInterval(timer);
+  document.getElementById('resend-link').style.display = 'none';
+  timer = setInterval(() => {
+    const left = Math.max(0, otpExp - Date.now());
+    const m = Math.floor(left/60000);
+    const s = Math.floor((left%60000)/1000);
+    document.getElementById('otp-timer').textContent = `ينتهي خلال: ${m}:${s.toString().padStart(2,'0')}`;
+    if (left === 0) {
+      clearInterval(timer);
+      document.getElementById('otp-timer').textContent = 'انتهت صلاحية الرمز';
+      document.getElementById('resend-link').style.display = 'block';
+    }
+  }, 1000);
+}
+
+function checkOtp() {
+  const entered = document.getElementById('otp-input').value.trim();
+  if (entered === otp && Date.now() < otpExp) {
+    clearInterval(timer);
+    document.getElementById('login-overlay').style.display = 'none';
+  } else {
+    document.getElementById('otp-error').style.display = 'block';
+  }
+}
+</script>
+
+</body>
+</html>

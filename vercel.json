@@ -1,6 +1,8 @@
 {
   "rewrites": [
     { "source": "/cert/:id", "destination": "/index.html" },
-    { "source": "/admin", "destination": "/admin/index.html" }
+    { "source": "/admin", "destination": "/admin/index.html" },
+    { "source": "/international", "destination": "/international.html" },
+    { "source": "/my-certs", "destination": "/my-certs.html" }
   ]
 }
